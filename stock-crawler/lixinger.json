@@ -1,11 +1,11 @@
 {
-  "name": "lixinger-crawler",
+  "name": "lixinger-600519",
   "seedUrls": [
     "https://www.lixinger.com/analytics/company/detail/sh/600519/600519"
   ],
   "urlRules": {
     "include": [
-      ".*lixinger\\.com/*"
+      ".*/600519/600519.*"
     ],
     "exclude": [
       ".*login.*",

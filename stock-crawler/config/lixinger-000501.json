@@ -1,11 +1,11 @@
 {
-  "name": "lixinger-crawler",
+  "name": "lixinger-000501",
   "seedUrls": [
-    "https://www.lixinger.com/analytics/company/detail/sh/600519/600519"
+    "https://www.lixinger.com/analytics/company/detail/sz/000501/501/fundamental"
   ],
   "urlRules": {
     "include": [
-      ".*lixinger\\.com/*"
+      ".*lixinger\\.com/analytics/company/detail/sz/000501.*"
     ],
     "exclude": [
       ".*login.*",
@@ -21,10 +21,10 @@
   },
   "crawler": {
     "headless": true,
-    "timeout": 30000,
-    "waitBetweenRequests": 1000,
+    "timeout": 60000,
+    "waitBetweenRequests": 3000,
     "maxRetries": 3,
-    "batchSize": 100,
+    "batchSize": 50,
     "userDataDir": "./chrome_user_data"
   },
   "output": {
