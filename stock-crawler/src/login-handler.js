@@ -118,6 +118,7 @@ class LoginHandler {
     const selectors = [
       'input[placeholder*="手机"]',
       'input[placeholder*="電話"]',
+      'input[placeholder*="手机号"]',
       'input[placeholder*="账号"]',
       'input[placeholder*="帳號"]',
       'input[placeholder*="用户"]',
@@ -137,30 +138,71 @@ class LoginHandler {
       'input[name="username"]',
       'input[name="email"]',
       'input[name="account"]',
-      // Generic fallback - first text input before password
+      // 优先选择登录表单内的输入框
+      '.login-form input[type="text"]',
+      '.login-form input',
+      '[class*="login"] input[type="text"]',
+      '[class*="login"] input',
+      // Generic fallback
       'input[type="text"]'
     ];
 
     for (const selector of selectors) {
       try {
-        const input = page.locator(selector).first();
-        const count = await input.count();
-        if (count > 0) {
-          await input.fill(username);
-          return;
+        const inputs = await page.locator(selector).all();
+        for (const input of inputs) {
+          try {
+            // 跳过不可见或禁用的输入框
+            const isVisible = await input.isVisible();
+            const isEnabled = await input.isEnabled();
+            if (!isVisible || !isEnabled) continue;
+
+            // 跳过搜索框（通过 placeholder 判断）
+            const placeholder = await input.getAttribute('placeholder') || '';
+            if (placeholder.includes('搜索') || placeholder.includes('search') || placeholder.includes('Search')) {
+              continue;
+            }
+
+            // 跳过 multiselect 输入框
+            const className = await input.getAttribute('class') || '';
+            if (className.includes('multiselect')) continue;
+
+            await input.fill(username);
+            return;
+          } catch (e) {
+            continue;
+          }
         }
       } catch (error) {
-        // Continue to next selector
         continue;
       }
     }
 
-    // Last resort: try first input
-    const firstInput = page.locator('input').first();
-    const count = await firstInput.count();
-    if (count > 0) {
-      await firstInput.fill(username);
-      return;
+    // Last resort: try all visible inputs, skip search-like ones
+    try {
+      const allInputs = await page.locator('input').all();
+      for (const input of allInputs) {
+        try {
+          const isVisible = await input.isVisible();
+          if (!isVisible) continue;
+
+          const placeholder = await input.getAttribute('placeholder') || '';
+          if (placeholder.includes('搜索') || placeholder.includes('search')) continue;
+
+          const className = await input.getAttribute('class') || '';
+          if (className.includes('multiselect')) continue;
+
+          const type = await input.getAttribute('type') || 'text';
+          if (type === 'password' || type === 'hidden' || type === 'submit') continue;
+
+          await input.fill(username);
+          return;
+        } catch (e) {
+          continue;
+        }
+      }
+    } catch (e) {
+      // ignore
     }
 
     throw new Error('Could not find username input field');
