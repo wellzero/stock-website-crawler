@@ -144,6 +144,9 @@ class LixingerParser extends BaseParser {
       await page.waitForTimeout(2000);
       await this.waitForLixingerContent(page);
 
+      // 处理分页表格 — 点击所有"下一页"按钮收集完整数据
+      await this.clickPaginationAndCollectData(page);
+
       const extractedData = await this.extractLixingerData(page, url);
       Object.assign(context.data, extractedData);
 
@@ -261,6 +264,129 @@ class LixingerParser extends BaseParser {
   }
 
   /**
+   * 点击分页按钮并收集所有页面数据
+   * 理杏仁财务表格通常有分页，需要点击"下一页"加载全部数据
+   */
+  async clickPaginationAndCollectData(page) {
+    try {
+      // 先收集当前页面所有表格的数据
+      await page.evaluate(() => {
+        window.__lixingerPaginatedData = [];
+        const tables = document.querySelectorAll('table');
+        tables.forEach((table, idx) => {
+          const headers = [];
+          const headerCells = table.querySelectorAll('thead th, thead td');
+          headerCells.forEach(cell => headers.push(cell.textContent?.trim() || ''));
+          if (headers.length === 0) {
+            const firstRow = table.querySelector('tr');
+            if (firstRow) {
+              firstRow.querySelectorAll('th, td').forEach(cell => headers.push(cell.textContent?.trim() || ''));
+            }
+          }
+          const rows = [];
+          const bodyRows = table.querySelectorAll('tbody tr');
+          const rowsToProcess = bodyRows.length > 0 ? bodyRows : table.querySelectorAll('tr');
+          rowsToProcess.forEach((row, rowIndex) => {
+            if (rowIndex === 0 && headers.length > 0 && bodyRows.length === 0) return;
+            const cells = Array.from(row.querySelectorAll('td, th'));
+            if (cells.length > 0) {
+              rows.push(cells.map(cell => cell.textContent?.trim() || ''));
+            }
+          });
+          window.__lixingerPaginatedData.push({ index: idx, headers, rows, caption: '' });
+        });
+      });
+
+      let hasMorePages = true;
+      let pageNum = 1;
+      const maxPages = 100;
+
+      while (hasMorePages && pageNum < maxPages) {
+        // 查找下一页按钮
+        const nextSelectors = [
+          '.el-pagination .btn-next:not(.disabled)',
+          '.el-pager li.active + li',
+          '.next:not(.disabled)',
+          '[class*="next"]:not(.disabled)',
+          'button:has-text("下一页")',
+          'a:has-text("下一页")',
+          'li:has-text("›")',
+          'li:has-text(">")'
+        ];
+
+        let nextButton = null;
+        for (const selector of nextSelectors) {
+          try {
+            const btn = page.locator(selector).first();
+            const count = await btn.count();
+            if (count > 0) {
+              const isDisabled = await btn.evaluate(el => {
+                return el.disabled || el.classList.contains('disabled') ||
+                       el.classList.contains('el-pagination--disabled') ||
+                       el.getAttribute('aria-disabled') === 'true';
+              }).catch(() => false);
+              if (!isDisabled) {
+                nextButton = btn;
+                break;
+              }
+            }
+          } catch (e) {
+            continue;
+          }
+        }
+
+        if (!nextButton) {
+          hasMorePages = false;
+          break;
+        }
+
+        await nextButton.click();
+        console.log(`  [Lixinger] 点击第 ${pageNum + 1} 页分页按钮...`);
+        await page.waitForTimeout(1000);
+
+        // 等待数据加载并收集新行
+        const hasNewData = await page.evaluate(() => {
+          const tables = document.querySelectorAll('table');
+          let newRowsAdded = 0;
+          tables.forEach((table, idx) => {
+            if (!window.__lixingerPaginatedData[idx]) return;
+            const existing = window.__lixingerPaginatedData[idx];
+            const bodyRows = table.querySelectorAll('tbody tr');
+            const rowsToProcess = bodyRows.length > 0 ? bodyRows : table.querySelectorAll('tr');
+            rowsToProcess.forEach((row, rowIndex) => {
+              if (rowIndex === 0 && existing.headers.length > 0 && bodyRows.length === 0) return;
+              const cells = Array.from(row.querySelectorAll('td, th'));
+              if (cells.length === 0) return;
+              const rowData = cells.map(cell => cell.textContent?.trim() || '');
+              // 去重：检查是否已存在相同行
+              const isDuplicate = existing.rows.some(r => JSON.stringify(r) === JSON.stringify(rowData));
+              if (!isDuplicate) {
+                existing.rows.push(rowData);
+                newRowsAdded++;
+              }
+            });
+          });
+          return newRowsAdded > 0;
+        });
+
+        if (!hasNewData) {
+          console.log(`  [Lixinger] 分页无新数据，停止点击`);
+          hasMorePages = false;
+        } else {
+          pageNum++;
+          console.log(`  [Lixinger] 第 ${pageNum} 页数据已收集`);
+        }
+      }
+
+      if (pageNum > 1) {
+        console.log(`  [Lixinger] 共收集 ${pageNum} 页分页数据`);
+      }
+    } catch (error) {
+      console.log(`  [Lixinger] 分页点击结束: ${error.message}`);
+    }
+  }
+
+  /**
    * 提取理杏仁页面数据
    */
   async extractLixingerData(page, url) {
@@ -289,15 +415,32 @@ class LixingerParser extends BaseParser {
       data.description = metaDesc?.getAttribute('content') || '';
 
       // 提取标准 HTML table
-      const tables = document.querySelectorAll('table');
-      tables.forEach((table, index) => {
-        const result = extractTableData(table);
-        if (result) {
-          result.index = index;
-          data.tables.push(result);
-          data.mainContent.push({ type: 'table', ...result });
-        }
-      });
+      // 优先使用分页收集的数据（如果有的话）
+      const paginatedData = window.__lixingerPaginatedData;
+      if (paginatedData && paginatedData.length > 0) {
+        paginatedData.forEach((tableData, index) => {
+          if (tableData.headers.length > 0 || tableData.rows.length > 0) {
+            const result = {
+              headers: tableData.headers,
+              rows: tableData.rows,
+              caption: tableData.caption || ''
+            };
+            result.index = index;
+            data.tables.push(result);
+            data.mainContent.push({ type: 'table', ...result });
+          }
+        });
+      } else {
+        const tables = document.querySelectorAll('table');
+        tables.forEach((table, index) => {
+          const result = extractTableData(table);
+          if (result) {
+            result.index = index;
+            data.tables.push(result);
+            data.mainContent.push({ type: 'table', ...result });
+          }
+        });
+      }
 
       // 提取 Vue Element UI 表格 (.el-table)
       const elTables = document.querySelectorAll('.el-table');
