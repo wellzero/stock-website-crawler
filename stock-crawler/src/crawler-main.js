@@ -219,25 +219,40 @@ class CrawlerMain {
         this.logger.info('No URLs to process in this batch. Crawling is up to date.');
       }
 
-      // Process each URL
-      for (let i = 0; i < linksToProcess.length; i++) {
-        const link = linksToProcess[i];
-        this.logProgress(i + 1, linksToProcess.length);
-        
+      // Process each URL, including newly discovered links within the same batch
+      let processedCount = 0;
+      while (processedCount < linksToProcess.length) {
+        const link = linksToProcess[processedCount];
+        this.logProgress(processedCount + 1, linksToProcess.length);
+
         // Mark as fetching
         this.linkManager.updateLinkStatus(link.url, 'fetching');
         this.linkManager.saveLinks(this.linksFile, this.linkManager.links);
-        
+
         const success = await this.processUrl(link.url);
-        
+
         if (success) {
           this.statsTracker.incrementCrawled();
         } else {
           this.statsTracker.incrementFailed();
         }
 
+        // After processing, check for newly discovered unfetched links
+        // and add them to the batch (up to batchSize limit)
+        const currentUnfetched = this.linkManager.getUnfetchedLinks();
+        const newlyAdded = currentUnfetched.filter(
+          l => !linksToProcess.find(lp => lp.url === l.url)
+        );
+        if (newlyAdded.length > 0 && linksToProcess.length < batchSize) {
+          const slotsRemaining = batchSize - linksToProcess.length;
+          const toAdd = newlyAdded.slice(0, slotsRemaining);
+          linksToProcess.push(...toAdd);
+        }
+
+        processedCount++;
+
         // Wait between requests
-        if (i < linksToProcess.length - 1) {
+        if (processedCount < linksToProcess.length) {
           await this.sleep(this.config.crawler.waitBetweenRequests);
         }
       }
@@ -553,7 +568,7 @@ class CrawlerMain {
 
       if (parser.supportsLinkDiscovery && parser.supportsLinkDiscovery()) {
         this.logger.info('Using parser-based link discovery');
-        newLinks = await parser.discoverLinks(page);
+        newLinks = await parser.discoverLinks(page, this.config.urlRules);
       } else {
         // Standard link extraction
         newLinks = await this.linkFinder.extractLinks(page, this.config.urlRules, {

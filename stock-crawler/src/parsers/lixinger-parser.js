@@ -1,4 +1,5 @@
 import BaseParser from './base-parser.js';
+import LinkFinder from '../link-finder.js';
 
 /**
  * Lixinger Parser - 理杏仁专用解析器
@@ -40,6 +41,22 @@ class LixingerParser extends BaseParser {
     } catch (e) {
       return 0;
     }
+  }
+
+  /**
+   * 声明支持 parser-based 链接发现
+   */
+  supportsLinkDiscovery() {
+    return true;
+  }
+
+  /**
+   * Parser-based 链接发现 — 先等待 Vue 渲染，再用 linkFinder.extractLinks 过滤
+   */
+  async discoverLinks(page, urlRules) {
+    await this.waitForLixingerContent(page);
+    const linkFinder = new LinkFinder();
+    return await linkFinder.extractLinks(page, urlRules, { fetchMethod: 'playwright' });
   }
 
   /**
@@ -110,38 +127,74 @@ class LixingerParser extends BaseParser {
   }
 
   /**
-   * 等待理杏仁页面内容加载完成
+   * 等待理杏仁页面内容加载完成（优化版）
+   * 使用智能轮询替代固定长等待，通常 2-5 秒完成
    */
   async waitForLixingerContent(page) {
     console.log('  [Lixinger] 等待 Vue 页面渲染...');
+    const startTime = Date.now();
 
+    // Phase 1: 基础加载
     await page.waitForLoadState('domcontentloaded', { timeout: 10000 }).catch(() => {});
-    await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
 
-    // 理杏仁页面需要较长时间加载数据，固定等待 10 秒让 Vue 完成渲染
-    await page.waitForTimeout(10000);
+    // Phase 2: 智能轮询 — 每 200ms 检测一次真实数据，最多 5 秒
+    const hasRealData = async () => {
+      return page.evaluate(() => {
+        // 检测 1: 包含数值数据的表格（非仅有表头）
+        const tables = document.querySelectorAll('table');
+        for (const table of tables) {
+          const dataCells = table.querySelectorAll('tbody td, tr td');
+          let meaningfulCells = 0;
+          for (const cell of dataCells) {
+            const text = cell.textContent.trim();
+            if (text.length > 0 && /[\d%\.]/.test(text)) {
+              meaningfulCells++;
+            }
+            if (meaningfulCells >= 3) return true;
+          }
+        }
 
-    // 等待页面标题从通用标题变为股票具体标题
-    let titleReady = false;
-    for (let attempt = 0; attempt < 20; attempt++) {
-      titleReady = await page.evaluate(() => {
+        // 检测 2: 包含财务指标的数据容器
+        const metricContainers = document.querySelectorAll(
+          '[class*="metric"], [class*="indicator"], [class*="financial"], [class*="data-row"]'
+        );
+        for (const container of metricContainers) {
+          const text = container.textContent.trim();
+          if (text.length > 30 && /[\d%\.]/.test(text)) return true;
+        }
+
+        // 检测 3: 标题已变为股票专属且正文有足够内容
         const title = document.title;
         const h1 = document.querySelector('h1');
         const h1Text = h1?.textContent?.trim() || '';
-        return (title && title.length > 0 && !title.includes(' - 理杏仁') && !title.includes('理杏仁 -')) ||
-               (h1Text.length > 0 && h1Text !== '理杏仁');
-      });
+        const isGenericTitle = title === '理杏仁' ||
+                               title.endsWith(' - 理杏仁') ||
+                               title.startsWith('理杏仁 -') ||
+                               h1Text === '理杏仁';
+        if (!isGenericTitle && /[一-龥]/.test(title)) {
+          const bodyText = document.body?.innerText || '';
+          if (bodyText.length > 1000) return true;
+        }
 
-      if (titleReady) {
-        console.log(`  [Lixinger] 股票标题已加载 (尝试 ${attempt + 1})`);
+        return false;
+      });
+    };
+
+    let found = false;
+    for (let i = 0; i < 25; i++) { // 25 * 200ms = 5 秒上限
+      if (await hasRealData()) {
+        found = true;
         break;
       }
-
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(200);
     }
 
-    await page.waitForTimeout(3000);
-    console.log('  [Lixinger] 页面内容加载完成');
+    // 最后缓冲 500ms 确保渲染完成
+    await page.waitForTimeout(500);
+
+    const elapsed = Date.now() - startTime;
+    console.log(`  [Lixinger] 页面内容加载完成 (${elapsed}ms)`);
   }
 
   /**
