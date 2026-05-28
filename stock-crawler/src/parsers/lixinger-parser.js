@@ -95,14 +95,29 @@ class LixingerParser extends BaseParser {
 
         console.log(`  [Lixinger API] ${responseUrl} -> ${typeof data} (keys: ${data && typeof data === 'object' ? Object.keys(data).slice(0, 5).join(',') : 'N/A'})`);
 
-        if (Array.isArray(data) && data.length > 0) {
+        // 过滤规则：跳过配置数据、索引成分数据等
+        const urlKey = responseUrl.split('/').pop().split('?')[0];
+        const skipDataKeys = ['granularities', 'granularity'];
+
+        if (Array.isArray(data) && data.length >= 5) {
+          // 跳过指数成分数据（股票页面不需要）
+          if (data[0]?.stockType === 'index' && data[0]?.weighting !== undefined) {
+            console.log(`    ⊘ 跳过指数成分数据 (${data.length} 条)`);
+            return;
+          }
           this.apiData.push({ url: responseUrl, data });
-          console.log(`    ✓ API数据已捕获: ${responseUrl.split('/').pop().split('?')[0]} (${data.length} 条)`);
+          console.log(`    ✓ API数据已捕获: ${urlKey} (${data.length} 条)`);
         } else if (data && typeof data === 'object') {
           for (const key of Object.keys(data)) {
-            if (Array.isArray(data[key]) && data[key].length > 0) {
+            if (skipDataKeys.includes(key)) continue;
+            if (Array.isArray(data[key]) && data[key].length >= 5) {
+              // 跳过指数成分数据
+              if (data[key][0]?.stockType === 'index' && data[key][0]?.weighting !== undefined) {
+                console.log(`    ⊘ 跳过指数成分数据 [${key}] (${data[key].length} 条)`);
+                continue;
+              }
               this.apiData.push({ url: responseUrl, data: data[key], field: key });
-              console.log(`    ✓ API数据已捕获: ${responseUrl.split('/').pop().split('?')[0]} [${key}] (${data[key].length} 条)`);
+              console.log(`    ✓ API数据已捕获: ${urlKey} [${key}] (${data[key].length} 条)`);
             }
           }
         }
