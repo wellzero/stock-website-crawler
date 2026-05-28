@@ -334,7 +334,7 @@ class CrawlerMain {
           username: this.config.login.username,
           password: this.config.login.password
         });
-        
+
         if (success) {
           this.logger.info('Login successful');
           await page.waitForTimeout(2000);
@@ -344,11 +344,11 @@ class CrawlerMain {
           this.logger.warn('Login failed on target page');
         }
       } else {
-        this.logger.info('No login form found, may already be logged in or page is accessible');
-        await page.close();
-        return true;
+        this.logger.info('No login form found on target page, will try seed URL');
+        // Don't return true here - user may not be logged in
+        // Fall through to Strategy 2
       }
-      
+
       // Strategy 2: Try to find login link on the main page
       this.logger.info('Strategy 2: Looking for login link on main page');
       const mainUrl = this.config.seedUrls && this.config.seedUrls.length > 0 ? this.config.seedUrls[0] : null;
@@ -524,6 +524,16 @@ class CrawlerMain {
 
       // Create new page
       const page = await this.browserManager.newPage();
+
+      // 如果 parser 有 beforeLoad 钩子，在导航前调用（用于设置 API 拦截器等）
+      try {
+        const preParser = await this.pageParser.parserManager.selectParser(url);
+        if (preParser && typeof preParser.beforeLoad === 'function') {
+          await preParser.beforeLoad({ page, url, options: {}, data: {} });
+        }
+      } catch (e) {
+        // ignore pre-navigation hook errors
+      }
 
       // Navigate to URL
       await this.browserManager.goto(page, url, this.config.crawler.timeout);

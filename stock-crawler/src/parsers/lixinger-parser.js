@@ -70,26 +70,36 @@ class LixingerParser extends BaseParser {
       const responseUrl = response.url();
       const status = response.status();
 
-      if (responseUrl.includes('lixinger.com') &&
-          (responseUrl.includes('/api/') || responseUrl.includes('/data/') ||
-           responseUrl.includes('/query/') || responseUrl.includes('/v2/'))) {
-        try {
-          const contentType = response.headers()['content-type'] || '';
-          if (contentType.includes('json')) {
-            const data = await response.json();
-            if (Array.isArray(data) && data.length > 0) {
-              this.apiData.push({ url: responseUrl, data });
-            } else if (data && typeof data === 'object') {
-              for (const key of Object.keys(data)) {
-                if (Array.isArray(data[key]) && data[key].length > 0) {
-                  this.apiData.push({ url: responseUrl, data: data[key], field: key });
-                }
-              }
+      // 拦截所有来自 lixinger.com 的 JSON 响应
+      if (!responseUrl.includes('lixinger.com')) return;
+
+      try {
+        const contentType = response.headers()['content-type'] || '';
+        if (!contentType.includes('json')) return;
+
+        const data = await response.json();
+
+        // 过滤掉错误响应和过小的响应
+        if (data && (data.code !== undefined || data.error !== undefined)) {
+          console.log(`  [Lixinger API] ${responseUrl} -> 错误响应 (code: ${data.code}, error: ${data.error})`);
+          return;
+        }
+
+        console.log(`  [Lixinger API] ${responseUrl} -> ${typeof data} (keys: ${data && typeof data === 'object' ? Object.keys(data).slice(0, 5).join(',') : 'N/A'})`);
+
+        if (Array.isArray(data) && data.length > 0) {
+          this.apiData.push({ url: responseUrl, data });
+          console.log(`    ✓ API数据已捕获: ${responseUrl.split('/').pop().split('?')[0]} (${data.length} 条)`);
+        } else if (data && typeof data === 'object') {
+          for (const key of Object.keys(data)) {
+            if (Array.isArray(data[key]) && data[key].length > 0) {
+              this.apiData.push({ url: responseUrl, data: data[key], field: key });
+              console.log(`    ✓ API数据已捕获: ${responseUrl.split('/').pop().split('?')[0]} [${key}] (${data[key].length} 条)`);
             }
           }
-        } catch (e) {
-          // ignore
         }
+      } catch (e) {
+        // ignore
       }
     });
   }
@@ -101,14 +111,15 @@ class LixingerParser extends BaseParser {
     const context = { page, url, options, data: {} };
 
     try {
-      if (typeof this.beforeLoad === 'function') {
-        await this.beforeLoad(context);
-      }
-
       await this.closePopups(page);
       await this.waitForLixingerContent(page);
       await this.closePopups(page);
       await this.scrollForLazyLoad(page);
+
+      // 滚动后再次等待内容加载
+      console.log('  [Lixinger] 滚动后等待额外内容加载...');
+      await page.waitForTimeout(2000);
+      await this.waitForLixingerContent(page);
 
       const extractedData = await this.extractLixingerData(page, url);
       Object.assign(context.data, extractedData);
@@ -202,16 +213,25 @@ class LixingerParser extends BaseParser {
    */
   async scrollForLazyLoad(page) {
     try {
+      console.log('  [Lixinger] 滚动触发懒加载...');
       await page.evaluate(async () => {
-        const scrollStep = 500;
-        const maxScrolls = 10;
+        const scrollStep = 800;
+        const maxScrolls = 20;
         for (let i = 0; i < maxScrolls; i++) {
           window.scrollBy(0, scrollStep);
-          await new Promise(r => setTimeout(r, 500));
+          await new Promise(r => setTimeout(r, 600));
         }
         window.scrollTo(0, 0);
+        await new Promise(r => setTimeout(r, 800));
       });
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(1500);
+
+      // 再次检查是否有新表格加载
+      const newTableCount = await page.evaluate(() => {
+        const tables = document.querySelectorAll('table, .el-table, .ant-table, [class*="data-grid"]');
+        return tables.length;
+      });
+      console.log(`  [Lixinger] 滚动后检测到 ${newTableCount} 个表格/数据网格`);
     } catch (e) {
       // ignore
     }
@@ -245,51 +265,77 @@ class LixingerParser extends BaseParser {
       const metaDesc = document.querySelector('meta[name="description"]');
       data.description = metaDesc?.getAttribute('content') || '';
 
+      // 提取标准 HTML table
       const tables = document.querySelectorAll('table');
       tables.forEach((table, index) => {
-        const headers = [];
-        const headerCells = table.querySelectorAll('thead th, thead td, tr:first-child th, tr:first-child td');
-        headerCells.forEach(cell => headers.push(cell.textContent?.trim() || ''));
+        const result = extractTableData(table);
+        if (result) {
+          result.index = index;
+          data.tables.push(result);
+          data.mainContent.push({ type: 'table', ...result });
+        }
+      });
 
-        const rows = [];
-        const bodyRows = table.querySelectorAll('tbody tr');
-        const rowsToProcess = bodyRows.length > 0 ? bodyRows : table.querySelectorAll('tr');
+      // 提取 Vue Element UI 表格 (.el-table)
+      const elTables = document.querySelectorAll('.el-table');
+      elTables.forEach((table, idx) => {
+        const result = extractElTable(table);
+        if (result) {
+          result.index = data.tables.length;
+          result.source = 'el-table';
+          data.tables.push(result);
+          data.mainContent.push({ type: 'table', ...result });
+        }
+      });
 
-        rowsToProcess.forEach((row, rowIndex) => {
-          if (rowIndex === 0 && headers.length > 0 && bodyRows.length === 0) return;
-          const cells = Array.from(row.querySelectorAll('td, th'));
-          if (cells.length > 0) {
-            const rowData = cells.map(cell => cell.textContent?.trim() || '');
-            if (rowData.some(cell => cell.length > 0)) {
-              rows.push(rowData);
+      // 提取 Ant Design 表格 (.ant-table)
+      const antTables = document.querySelectorAll('.ant-table');
+      antTables.forEach((table, idx) => {
+        const result = extractAntTable(table);
+        if (result) {
+          result.index = data.tables.length;
+          result.source = 'ant-table';
+          data.tables.push(result);
+          data.mainContent.push({ type: 'table', ...result });
+        }
+      });
+
+      // 提取通用 div grid 表格
+      const gridTables = document.querySelectorAll('[class*="data-grid"], [class*="table-grid"], [class*="virtual-list"]');
+      gridTables.forEach((table, idx) => {
+        const result = extractDivGrid(table);
+        if (result) {
+          result.index = data.tables.length;
+          result.source = 'div-grid';
+          data.tables.push(result);
+          data.mainContent.push({ type: 'table', ...result });
+        }
+      });
+
+      // 提取页面中的结构化数值数据 (metric cards)
+      const metricSections = document.querySelectorAll('[class*="metric"], [class*="indicator"], [class*="financial"], [class*="valuation"]');
+      metricSections.forEach((section, idx) => {
+        const items = section.querySelectorAll('div, span, p');
+        const metricData = [];
+        let currentRow = [];
+        items.forEach(item => {
+          const text = item.textContent?.trim() || '';
+          if (text && text.length > 0 && text.length < 50) {
+            currentRow.push(text);
+            if (currentRow.length >= 2) {
+              metricData.push([...currentRow]);
+              currentRow = [];
             }
           }
         });
-
-        if (headers.length > 0 || rows.length > 0) {
-          let caption = '';
-          let prevEl = table.previousElementSibling;
-          let searchDepth = 3;
-          while (prevEl && searchDepth > 0) {
-            const text = prevEl.textContent?.trim();
-            if (text && text.length > 0 && text.length < 100) {
-              caption = text;
-              break;
-            }
-            prevEl = prevEl.previousElementSibling;
-            searchDepth--;
-          }
-
-          if (!caption) {
-            const parent = table.closest('section, div[class*="panel"], div[class*="card"], div[class*="section"]');
-            if (parent) {
-              const titleEl = parent.querySelector('h1, h2, h3, h4, .title, [class*="title"]');
-              if (titleEl) caption = titleEl.textContent?.trim();
-            }
-          }
-
-          data.tables.push({ index, headers, rows, caption });
-          data.mainContent.push({ type: 'table', headers, rows, caption });
+        if (metricData.length > 0) {
+          data.tables.push({
+            index: data.tables.length,
+            headers: ['指标', '数值'],
+            rows: metricData,
+            caption: '估值指标',
+            source: 'metric-section'
+          });
         }
       });
 
@@ -358,7 +404,154 @@ class LixingerParser extends BaseParser {
         });
       }
 
+      // 尝试从 window.__INITIAL_STATE__ 或类似全局变量提取数据
+      try {
+        const globalDataKeys = ['__INITIAL_STATE__', '__DATA__', '__APP__', '__INITIAL_DATA__', 'appData'];
+        for (const key of globalDataKeys) {
+          if (window[key]) {
+            const stateData = window[key];
+            if (typeof stateData === 'object') {
+              // 查找对象中的数组属性（可能是表格数据）
+              for (const [prop, value] of Object.entries(stateData)) {
+                if (Array.isArray(value) && value.length > 3 && typeof value[0] === 'object') {
+                  const keys = Object.keys(value[0]);
+                  const rows = value.map(item => keys.map(k => String(item[k] ?? '')));
+                  data.tables.push({
+                    index: data.tables.length,
+                    headers: keys,
+                    rows,
+                    caption: `全局数据: ${key}.${prop}`,
+                    source: 'global-state'
+                  });
+                }
+              }
+            }
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+
       return data;
+
+      // Helper: 提取标准 HTML table
+      function extractTableData(table) {
+        const headers = [];
+        const headerCells = table.querySelectorAll('thead th, thead td, tr:first-child th, tr:first-child td');
+        headerCells.forEach(cell => headers.push(cell.textContent?.trim() || ''));
+
+        const rows = [];
+        const bodyRows = table.querySelectorAll('tbody tr');
+        const rowsToProcess = bodyRows.length > 0 ? bodyRows : table.querySelectorAll('tr');
+
+        rowsToProcess.forEach((row, rowIndex) => {
+          if (rowIndex === 0 && headers.length > 0 && bodyRows.length === 0) return;
+          const cells = Array.from(row.querySelectorAll('td, th'));
+          if (cells.length > 0) {
+            const rowData = cells.map(cell => cell.textContent?.trim() || '');
+            if (rowData.some(cell => cell.length > 0)) {
+              rows.push(rowData);
+            }
+          }
+        });
+
+        if (headers.length === 0 && rows.length === 0) return null;
+
+        let caption = '';
+        let prevEl = table.previousElementSibling;
+        let searchDepth = 3;
+        while (prevEl && searchDepth > 0) {
+          const text = prevEl.textContent?.trim();
+          if (text && text.length > 0 && text.length < 100) {
+            caption = text;
+            break;
+          }
+          prevEl = prevEl.previousElementSibling;
+          searchDepth--;
+        }
+
+        if (!caption) {
+          const parent = table.closest('section, div[class*="panel"], div[class*="card"], div[class*="section"]');
+          if (parent) {
+            const titleEl = parent.querySelector('h1, h2, h3, h4, .title, [class*="title"]');
+            if (titleEl) caption = titleEl.textContent?.trim();
+          }
+        }
+
+        return { headers, rows, caption };
+      }
+
+      // Helper: 提取 Element UI 表格
+      function extractElTable(table) {
+        const headers = [];
+        const headerCells = table.querySelectorAll('.el-table__header th, .el-table__header .cell');
+        headerCells.forEach(cell => {
+          const text = cell.textContent?.trim();
+          if (text && !headers.includes(text)) headers.push(text);
+        });
+
+        const rows = [];
+        const bodyRows = table.querySelectorAll('.el-table__body tr, .el-table__row');
+        bodyRows.forEach(row => {
+          const cells = Array.from(row.querySelectorAll('.cell, td'));
+          const rowData = cells.map(cell => cell.textContent?.trim() || '');
+          if (rowData.some(cell => cell.length > 0)) {
+            rows.push(rowData);
+          }
+        });
+
+        if (headers.length === 0 && rows.length === 0) return null;
+
+        const captionEl = table.closest('section, div[class*="panel"], div[class*="card"]')?.querySelector('h1, h2, h3, h4, .title');
+        const caption = captionEl?.textContent?.trim() || '';
+        return { headers, rows, caption };
+      }
+
+      // Helper: 提取 Ant Design 表格
+      function extractAntTable(table) {
+        const headers = [];
+        const headerCells = table.querySelectorAll('.ant-table-thead th, .ant-table-cell');
+        headerCells.forEach(cell => {
+          const text = cell.textContent?.trim();
+          if (text && !headers.includes(text)) headers.push(text);
+        });
+
+        const rows = [];
+        const bodyRows = table.querySelectorAll('.ant-table-tbody tr');
+        bodyRows.forEach(row => {
+          const cells = Array.from(row.querySelectorAll('.ant-table-cell, td'));
+          const rowData = cells.map(cell => cell.textContent?.trim() || '');
+          if (rowData.some(cell => cell.length > 0)) {
+            rows.push(rowData);
+          }
+        });
+
+        if (headers.length === 0 && rows.length === 0) return null;
+        return { headers, rows, caption: '' };
+      }
+
+      // Helper: 提取通用 div grid
+      function extractDivGrid(grid) {
+        const headers = [];
+        const headerEls = grid.querySelectorAll('[class*="header"], [class*="title"]');
+        headerEls.forEach(el => {
+          const text = el.textContent?.trim();
+          if (text && text.length < 50 && !headers.includes(text)) headers.push(text);
+        });
+
+        const rows = [];
+        const rowEls = grid.querySelectorAll('[class*="row"], [class*="item"]');
+        rowEls.forEach(row => {
+          const cells = Array.from(row.children);
+          const rowData = cells.map(cell => cell.textContent?.trim() || '');
+          if (rowData.some(cell => cell.length > 0)) {
+            rows.push(rowData);
+          }
+        });
+
+        if (headers.length === 0 && rows.length === 0) return null;
+        return { headers, rows, caption: '' };
+      }
     }, url);
   }
 
