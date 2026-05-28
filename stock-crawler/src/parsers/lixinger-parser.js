@@ -70,8 +70,16 @@ class LixingerParser extends BaseParser {
       const responseUrl = response.url();
       const status = response.status();
 
-      // 拦截所有来自 lixinger.com 的 JSON 响应
+      // 只拦截来自 lixinger.com 的 JSON 响应
       if (!responseUrl.includes('lixinger.com')) return;
+
+      // 跳过用户、通知、追踪等非数据端点
+      const skipPatterns = [
+        '/user/users/', '/user/notifications/', '/site/notifications/',
+        '/tracking.', '/api/send', '/page-configs/list-of-indexes',
+        '/auth/', '/login', '/logout'
+      ];
+      if (skipPatterns.some(p => responseUrl.includes(p))) return;
 
       try {
         const contentType = response.headers()['content-type'] || '';
@@ -79,7 +87,7 @@ class LixingerParser extends BaseParser {
 
         const data = await response.json();
 
-        // 过滤掉错误响应和过小的响应
+        // 过滤掉错误响应
         if (data && (data.code !== undefined || data.error !== undefined)) {
           console.log(`  [Lixinger API] ${responseUrl} -> 错误响应 (code: ${data.code}, error: ${data.error})`);
           return;
@@ -455,7 +463,18 @@ class LixingerParser extends BaseParser {
           }
         });
 
+        // 过滤掉无效表格
         if (headers.length === 0 && rows.length === 0) return null;
+        // 跳过只有表头没有数据行的表格
+        if (rows.length === 0) return null;
+        // 跳过列数过少的表格（可能是分页控件或占位符）
+        const maxCols = Math.max(headers.length, ...rows.map(r => r.length));
+        if (maxCols < 2) return null;
+        // 跳过所有行都是纯数字/页码的表格（分页控件）
+        const isPagination = rows.every(row =>
+          row.every(cell => /^[\d›‹<>»«]+$/.test(cell.trim()) || cell.trim() === '')
+        );
+        if (isPagination) return null;
 
         let caption = '';
         let prevEl = table.previousElementSibling;
