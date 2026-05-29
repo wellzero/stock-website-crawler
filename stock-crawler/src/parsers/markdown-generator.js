@@ -173,44 +173,18 @@ class MarkdownGenerator {
    * @returns {string} Markdown文本
    */
   generateLixinger(pageData) {
-    const lines = [];
+    const sections = [];
 
     if (pageData.tables && pageData.tables.length > 0) {
-      for (const table of pageData.tables) {
-        const csv = this.tableToCsv(table);
-        if (csv) lines.push(csv);
-      }
+      pageData.tables.forEach((table) => {
+        const markdown = this.tableToMarkdown(table);
+        if (markdown) {
+          sections.push(markdown);
+        }
+      });
     }
 
-    return lines.join('\n\n');
-  }
-
-  /**
-   * 将表格转换为 CSV 字符串
-   */
-  tableToCsv(table) {
-    if (!table || (!table.headers?.length && !table.rows?.length)) return '';
-
-    const escapeCsv = (cell) => {
-      if (cell === null || cell === undefined) return '';
-      const str = String(cell);
-      // 如果包含逗号、引号或换行，用引号包裹并转义内部引号
-      if (/[",\n\r]/.test(str)) {
-        return '"' + str.replace(/"/g, '""') + '"';
-      }
-      return str;
-    };
-
-    const lines = [];
-    if (table.headers && table.headers.length > 0) {
-      lines.push(table.headers.map(escapeCsv).join(','));
-    }
-    if (table.rows && table.rows.length > 0) {
-      for (const row of table.rows) {
-        lines.push(row.map(escapeCsv).join(','));
-      }
-    }
-    return lines.join('\n');
+    return sections.join('\n\n');
   }
 
   generate60sApiDoc(pageData) {
@@ -5660,8 +5634,8 @@ class MarkdownGenerator {
         fs.mkdirSync(outputDir, { recursive: true });
       }
 
-      // 如果文件名已有扩展名则保留，否则默认 .md
-      const filenameWithExt = filename.includes('.') ? filename : `${filename}.md`;
+      // 确保文件名有.md扩展名
+      const filenameWithExt = filename.endsWith('.md') ? filename : `${filename}.md`;
 
       // 生成完整路径
       const filepath = path.join(outputDir, filenameWithExt);
