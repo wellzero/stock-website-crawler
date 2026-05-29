@@ -80,6 +80,12 @@ class MarkdownGenerator {
   generate(pageData) {
     let markdown = '';
 
+    // 理杏仁财务页面：只输出表格，不加 frontmatter
+    if (pageData.type === 'lixinger') {
+      markdown = this.generateLixinger(pageData);
+      return markdown || '';
+    }
+
     if (pageData.type === 'google-discovery-doc') {
       markdown = this.generateGoogleDiscoveryDoc(pageData);
     }
@@ -159,6 +165,26 @@ class MarkdownGenerator {
       default:
         return '';
     }
+  }
+
+  /**
+   * 生成理杏仁财务页面Markdown — 只输出表格，不加任何其他内容
+   * @param {PageData} pageData - 理杏仁页面数据
+   * @returns {string} Markdown文本
+   */
+  generateLixinger(pageData) {
+    const sections = [];
+
+    if (pageData.tables && pageData.tables.length > 0) {
+      pageData.tables.forEach((table) => {
+        const markdown = this.tableToMarkdown(table);
+        if (markdown) {
+          sections.push(markdown);
+        }
+      });
+    }
+
+    return sections.join('\n\n');
   }
 
   generate60sApiDoc(pageData) {

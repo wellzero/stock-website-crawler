@@ -953,20 +953,86 @@ class LixingerParser extends BaseParser {
   /**
    * 格式化最终结果
    */
+  /**
+   * 判断表格是否为财务报表数据（资产负债表/利润表/现金流量表）
+   * 排除公司概况、估值指标等非财务表格
+   */
+  isFinancialTable(table) {
+    if (!table || !table.headers || table.rows.length === 0) return false;
+
+    const headerText = table.headers.join(' ');
+
+    // 快速判断 1：表头包含独立的年份/季度列 → 财务表
+    // 要求年份是独立列（如 "2001"），而不是嵌入在文本中（如 "上市时间2001-08-27"）
+    const hasYearHeader = table.headers.some(h => /^\s*20\d{2}\s*$/.test(String(h))) ||
+                          table.headers.some(h => /^\s*Q[1-4]\s*$/.test(String(h)));
+    if (hasYearHeader) return true;
+
+    // 快速判断 2：表头包含明确的财务关键字 → 财务表
+    // 同时排除公司估值指标（PE-TTM、PB、股息率等）
+    const stockMetrics = ['PE-TTM', 'PB', '股息率', '股价', '涨跌幅', '市值'];
+    const hasStockMetrics = stockMetrics.some(m => headerText.includes(m));
+    if (hasStockMetrics) return false;
+
+    const financialTerms = [
+      '资产', '负债', '权益', '流动资产', '货币资金', '应收账款',
+      '存货', '固定资产', '无形资产', '商誉', '长期股权投资',
+      '负债合计', '流动负债', '非流动负债', '应付账款',
+      '所有者权益', '股本', '资本公积', '未分配利润',
+      '营业收入', '营业成本', '净利润', '毛利率',
+      '现金流量', '经营活动', '投资活动', '筹资活动',
+      '默认单位', '审计意见', '报表日期'
+    ];
+    const hasFinancialHeader = financialTerms.some(term => headerText.includes(term));
+    if (hasFinancialHeader) return true;
+
+    // 排除 API 原始数据表格（字段名为英文代码如 q.bs.ta, stockId 等）
+    const isApiRawData = table.source === 'api' ||
+      table.headers.some(h => /^(stockId|date|ownerType|dataType|q\.bs\.|q\.is\.|q\.cf\.)/.test(String(h)));
+    if (isApiRawData) return false;
+
+    // 排除公司概况表格（包含 PE-TTM、PB、股息率、股价等）
+    const allText = [...table.headers, ...table.rows.flat()].join(' ');
+    const nonFinancialPatterns = [
+      /PE-TTM.*PB.*股息率/,
+      /股价.*涨跌幅.*市值/,
+      /所属三级行业.*申万/,
+      /所属指数.*纳入纳出/,
+      /最新大宗交易/,
+      /实际控制人/
+    ];
+    if (nonFinancialPatterns.some(p => p.test(allText))) return false;
+
+    // 兜底：整表包含财务关键字或年份/季度，且有一定规模
+    const hasFinancialTerm = financialTerms.some(term => allText.includes(term));
+    const hasYearOrQuarter = /\b20\d{2}\b/.test(allText) || /\bQ[1-4]\b/.test(allText);
+    const isLargeTable = table.rows.length > 30;
+
+    return hasFinancialTerm || hasYearOrQuarter || isLargeTable;
+  }
+
   formatResult(data, url) {
+    // 过滤只保留财务表格
+    const allTables = data.tables || [];
+    const financialTables = allTables.filter(t => this.isFinancialTable(t));
+
+    // 只保留表格类型的 mainContent
+    const financialMainContent = (data.mainContent || [])
+      .filter(item => item.type === 'table')
+      .filter(item => this.isFinancialTable(item));
+
     return {
-      type: 'generic',
-      subtype: 'lixinger',
+      type: 'lixinger',
       url,
-      title: data.title || '',
-      description: data.description || '',
-      headings: data.headings || [],
-      mainContent: data.mainContent || [],
-      paragraphs: data.paragraphs || [],
-      lists: data.lists || [],
-      tables: data.tables || [],
-      codeBlocks: data.codeBlocks || [],
-      images: data.images || [],
+      title: '',
+      description: '',
+      headings: [],
+      mainContent: financialMainContent,
+      paragraphs: [],
+      lists: [],
+      tables: financialTables,
+      codeBlocks: [],
+      images: [],
       charts: [],
       chartData: [],
       blockquotes: [],
@@ -974,7 +1040,7 @@ class LixingerParser extends BaseParser {
       horizontalRules: 0,
       videos: [],
       audios: [],
-      apiData: data.apiDataCount || 0,
+      apiData: 0,
       pageFeatures: { suggestedType: 'lixinger', confidence: 100, signals: ['vue-spa', 'financial-data'] },
       tabsAndDropdowns: [],
       dateFilters: []
