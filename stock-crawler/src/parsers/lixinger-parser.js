@@ -125,8 +125,11 @@ class LixingerParser extends BaseParser {
         '/ii/constituents/list', '/ii/fs-metrics/',
         // 用户设置/自定义指标——不是财务数据
         '/ugd/settings-groups', '/ugd/custom-fs-metrics/',
-        // 日期范围/指标元数据——不是实际数据值
-        '/fs-metrics/list/date-range', '/fs-metrics/list-info',
+        // 日期范围——不是实际数据值
+        '/fs-metrics/list/date-range',
+        // 注意：list-info 包含实际财务指标数据（如毛利率、ROE 等），
+        // 只在 fundamental 分析页面（/fundamental/profit, /fundamental/growth 等）保留
+        // 不在此处跳过，由后续逻辑按需处理
       ];
       if (skipPatterns.some(p => responseUrl.includes(p))) return;
 
@@ -206,10 +209,15 @@ class LixingerParser extends BaseParser {
       }
 
       // 如果 URL 分页已收集到宽列数据（多页合并），跳过 UI 点击避免覆盖
-      if (!hasWideColumns) {
-        await this.clickPaginationAndCollectData(page);
-      } else {
+      // 同时跳过 fundamental 分析页面（/fundamental/profit, /fundamental/growth 等）
+      // 这些页面的数据以图表形式展示，分页按钮通常属于无关组件（如股票对比列表）
+      const isFundamentalAnalysisPage = /\/fundamental\/(profit|growth|cash-flow|operating-ability|cost|per-capita|asset|debt|safety)/.test(url);
+      if (hasWideColumns) {
         console.log('  [Lixinger] URL 分页已收集完整数据，跳过 UI 点击');
+      } else if (isFundamentalAnalysisPage) {
+        console.log('  [Lixinger] fundamental 分析页面跳过 UI 分页点击');
+      } else {
+        await this.clickPaginationAndCollectData(page);
       }
 
       const extractedData = await this.extractLixingerData(page, url);
@@ -1016,8 +1024,18 @@ class LixingerParser extends BaseParser {
 
     for (const apiResponse of apiDataList) {
       try {
-        const { url, data } = apiResponse;
+        const { url, data, field } = apiResponse;
         if (!Array.isArray(data) || data.length === 0) continue;
+
+        // 特殊处理：fsMetricsList 数据（来自 /fs-metrics/list-info）
+        // 这类数据包含时间序列的财务指标，需要转换为人类可读的表格
+        if (field === 'fsMetricsList' || this.isFsMetricsList(data)) {
+          const metricTable = this.convertFsMetricsListToTable(data, url);
+          if (metricTable) {
+            tables.push(metricTable);
+          }
+          continue;
+        }
 
         const firstItem = data[0];
         const keys = Object.keys(firstItem);
@@ -1070,6 +1088,90 @@ class LixingerParser extends BaseParser {
     }
 
     return tables;
+  }
+
+  /**
+   * 判断数据是否为 fsMetricsList 格式（来自 /fs-metrics/list-info）
+   */
+  isFsMetricsList(data) {
+    if (!Array.isArray(data) || data.length === 0) return false;
+    const first = data[0];
+    return first.stockId !== undefined && first.date !== undefined &&
+      first.q !== undefined && typeof first.q === 'object';
+  }
+
+  /**
+   * 将 fsMetricsList 转换为人类可读的表格
+   * 行=指标（毛利率、ROE等），列=日期
+   */
+  convertFsMetricsListToTable(data, url) {
+    try {
+      // 指标名称映射
+      const metricNames = {
+        'ps.gp_m': '毛利率',
+        'ps.op_m': '营业利润率',
+        'ps.np_m': '净利润率',
+        'ps.np_s_r': '销售净利率',
+        'ps.npadnrpatoshaopc_npatoshopc_r': '扣非净利润占比',
+        'ps.wdroe': '扣非加权ROE',
+        'm.wroe': '加权ROE',
+        'm.roe': 'ROE',
+        'm.roe_atoshaopc': 'ROE(归属母公司)',
+        'm.roe_adnrpatoshaopc': '扣非ROE',
+        'm.roa': 'ROA',
+        'm.roic': 'ROIC',
+        'm.roc': '投入资本回报率',
+        'm.ta_to': '总资产周转率',
+        'm.l': '权益乘数',
+        'm.np_s_r': '净利润率'
+      };
+
+      // 收集所有指标键
+      const allKeys = new Set();
+      for (const d of data) {
+        if (d.q && d.q.ps) Object.keys(d.q.ps).forEach(k => allKeys.add('ps.' + k));
+        if (d.q && d.q.m) Object.keys(d.q.m).forEach(k => allKeys.add('m.' + k));
+        if (d.q && d.q.bs) Object.keys(d.q.bs).forEach(k => allKeys.add('bs.' + k));
+        if (d.q && d.q.cfs) Object.keys(d.q.cfs).forEach(k => allKeys.add('cfs.' + k));
+      }
+
+      if (allKeys.size === 0) return null;
+
+      // 提取日期（从最新到最旧，取前 20 个）
+      const sortedData = [...data].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 20);
+      const dates = sortedData.map(d => {
+        const date = new Date(d.date);
+        const year = date.getFullYear();
+        const quarter = Math.ceil((date.getMonth() + 1) / 3);
+        return `${year}Q${quarter}`;
+      });
+
+      // 构建表格行：每行是一个指标，每列是一个日期
+      const rows = [];
+      for (const key of Array.from(allKeys).sort()) {
+        const [category, metric] = key.split('.');
+        const name = metricNames[key] || key;
+        const values = sortedData.map(d => {
+          const v = d.q?.[category]?.[metric]?.t;
+          if (v === undefined || v === null) return '';
+          // 小于等于1的值视为百分比（如 0.8975 = 89.75%）
+          if (Math.abs(v) <= 1 && v !== 0) return (v * 100).toFixed(2) + '%';
+          // 大数值保留两位小数
+          return Number(v).toFixed(2);
+        });
+        rows.push([name, ...values]);
+      }
+
+      return {
+        index: 0,
+        headers: ['指标', ...dates],
+        rows,
+        caption: '财务指标',
+        source: 'fs-metrics'
+      };
+    } catch (e) {
+      return null;
+    }
   }
 
   /**
@@ -1297,7 +1399,27 @@ class LixingerParser extends BaseParser {
       return true;
     });
 
-    // 5. 排除空表格（0 行数据）和单列表头为 "#" 的分页 artifact 表格
+    // 5. 排除股票对比/列表表格（如 "公司名称(905)", "PE-TTM", "PB" 等）
+    // 这些表格出现在页面底部，属于股票筛选组件，不是当前页面数据
+    allTables = allTables.filter(t => {
+      const headerText = t.headers.join(' ');
+      // 排除包含 "公司名称" 带股票数量的表头
+      if (/公司名称\(\d+\)/.test(headerText)) return false;
+      // 排除同时包含 #、PE-TTM、PB 的股票列表表格
+      if (t.headers.includes('#') && t.headers.includes('PE-TTM') && t.headers.includes('PB')) return false;
+      // 排除行中包含多个不同股票代码的表格
+      const stockCodes = new Set();
+      for (const row of t.rows) {
+        for (const cell of row) {
+          const match = String(cell).match(/(\d{6}\.(sh|sz|hk))/);
+          if (match) stockCodes.add(match[1]);
+        }
+      }
+      if (stockCodes.size >= 3) return false;
+      return true;
+    });
+
+    // 6. 排除空表格（0 行数据）和单列表头为 "#" 的分页 artifact 表格
     allTables = allTables.filter(t => {
       if (t.rows.length === 0) return false;
       if (t.headers.length === 1 && t.headers[0] === '#') return false;
