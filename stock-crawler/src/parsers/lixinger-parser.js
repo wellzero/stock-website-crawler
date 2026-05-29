@@ -1171,11 +1171,53 @@ class LixingerParser extends BaseParser {
     }
   }
 
-  formatResult(data, url) {
-    const allTables = data.tables || [];
+  /**
+   * 生成表格去重签名：用表头 + 前3行数据的 MD5
+   */
+  tableSignature(table) {
+    const sample = JSON.stringify(table.headers) +
+      JSON.stringify(table.rows.slice(0, 3));
+    return sample;
+  }
 
-    // 只在真正的财务报表页面（资产负债表/利润表/现金流量表）上应用财务表格过滤
-    // 对于 fundamental、valuation 等概览页面，保留所有表格以免输出为空
+  /**
+   * 判断是否为公司概况/概览表格（PE-TTM、PB、所属行业、所属指数等）
+   * 这类表格出现在几乎所有页面顶部，只在 fundamental 页保留
+   */
+  isCompanyOverviewTable(table) {
+    if (!table || !table.headers) return false;
+    const allText = [...table.headers, ...table.rows.flat()].join(' ');
+    const overviewPatterns = [
+      /PE-TTM.*PB.*股息率/,
+      /股价.*涨跌幅.*市值/,
+      /所属三级行业.*申万/,
+      /所属指数.*纳入纳出/,
+      /最新大宗交易/,
+      /实际控制人/,
+    ];
+    return overviewPatterns.some(p => p.test(allText));
+  }
+
+  formatResult(data, url) {
+    let allTables = data.tables || [];
+
+    // 1. 去重：同一页面内被多个选择器重复提取的表格
+    const seen = new Set();
+    allTables = allTables.filter(t => {
+      const sig = this.tableSignature(t);
+      if (seen.has(sig)) return false;
+      seen.add(sig);
+      return true;
+    });
+
+    // 2. 公司概况表格（PE-TTM、PB、所属行业等）只在 fundamental 页保留
+    // 其他页面（major-issues、custom、bs 等）都跳过，避免所有文件内容雷同
+    const isFundamentalPage = /\/fundamental$/.test(url);
+    if (!isFundamentalPage) {
+      allTables = allTables.filter(t => !this.isCompanyOverviewTable(t));
+    }
+
+    // 3. 只在真正的财务报表页面（资产负债表/利润表/现金流量表）上应用财务表格过滤
     const isFinancialStatementPage = /\/(bs|ps|cfs|is|cashflow|income)\b/.test(url);
     const financialTables = isFinancialStatementPage
       ? allTables.filter(t => this.isFinancialTable(t))
