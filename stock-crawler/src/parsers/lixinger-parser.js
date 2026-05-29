@@ -52,11 +52,53 @@ class LixingerParser extends BaseParser {
 
   /**
    * Parser-based 链接发现 — 先等待 Vue 渲染，再用 linkFinder.extractLinks 过滤
+   * 对于财务页面（bs/ps/cfs），额外添加年报/季报/半年报三种粒度 URL
    */
   async discoverLinks(page, urlRules) {
     await this.waitForLixingerContent(page);
     const linkFinder = new LinkFinder();
-    return await linkFinder.extractLinks(page, urlRules, { fetchMethod: 'playwright' });
+    const links = await linkFinder.extractLinks(page, urlRules, { fetchMethod: 'playwright' });
+
+    // 为财务页面添加三种粒度（年报/季报/半年报）
+    const financialPaths = ['/bs', '/ps', '/cfs', '/is'];
+    const extraLinks = [];
+    const granularities = [
+      { key: 'y', suffix: 'yearly' },
+      { key: 'q', suffix: 'quarter' }
+    ];
+
+    for (const url of links) {
+      if (!financialPaths.some(p => url.includes(p))) continue;
+      try {
+        const u = new URL(url);
+        const currentGranularity = u.searchParams.get('granularity');
+        for (const g of granularities) {
+          // 如果原始 URL 没有 granularity，跳过 quarter（原始 URL 会默认处理为季报）
+          if (!currentGranularity && g.key === 'q') continue;
+          if (currentGranularity === g.key) continue;
+          const newUrl = new URL(url);
+          newUrl.searchParams.set('granularity', g.key);
+          // 保留其他必要参数
+          if (!newUrl.searchParams.has('fs-owner-type')) {
+            newUrl.searchParams.set('fs-owner-type', 'consolidated');
+          }
+          if (!newUrl.searchParams.has('data-display-type')) {
+            newUrl.searchParams.set('data-display-type', 'number');
+          }
+          if (!newUrl.searchParams.has('data-report-type')) {
+            newUrl.searchParams.set('data-report-type', 'all');
+          }
+          if (!newUrl.searchParams.has('data-metrics-types')) {
+            newUrl.searchParams.set('data-metrics-types', 't,c,c2y,yoy,coc');
+          }
+          extraLinks.push(newUrl.toString());
+        }
+      } catch (e) {
+        // ignore invalid URLs
+      }
+    }
+
+    return [...links, ...extraLinks];
   }
 
   /**
@@ -461,8 +503,13 @@ class LixingerParser extends BaseParser {
         const pageUrl = buildUrl(pageIndex);
         const currentUrl = page.url();
 
-        if (!currentUrl.includes(`page-index=${pageIndex}`)) {
-          console.log(`  [Lixinger] 导航到 page-index=${pageIndex}...`);
+        // 检查是否需要导航：page-index 不同 或 granularity 不同 都需要重新导航
+        const expectedGranularity = new URL(pageUrl).searchParams.get('granularity') || 'q';
+        const currentGranularity = new URL(currentUrl).searchParams.get('granularity') || 'q';
+        const needsNavigation = !currentUrl.includes(`page-index=${pageIndex}`) || currentGranularity !== expectedGranularity;
+
+        if (needsNavigation) {
+          console.log(`  [Lixinger] 导航到 page-index=${pageIndex} granularity=${expectedGranularity}...`);
           await page.goto(pageUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
           await this.waitForLixingerContent(page);
           await page.waitForTimeout(1500);
@@ -1076,6 +1123,43 @@ class LixingerParser extends BaseParser {
     return hasFinancialTerm || hasYearOrQuarter || isLargeTable;
   }
 
+  /**
+   * 根据 URL 生成建议文件名，包含粒度标识（yearly/quarter/half_year）
+   */
+  buildSuggestedFilename(url) {
+    try {
+      const u = new URL(url);
+      const path = u.pathname;
+      const granularity = u.searchParams.get('granularity') || 'q';
+      const granularitySuffix = { y: 'yearly', q: 'quarter', h: 'half_year' }[granularity] || 'quarter';
+
+      // 从路径推断报表类型
+      const pathMap = {
+        '/bs': '资产负债表',
+        '/ps': '利润表',
+        '/cfs': '现金流量表',
+        '/is': '利润表',
+        '/cashflow': '现金流量表',
+        '/income': '利润表'
+      };
+      let reportType = '财务数据';
+      for (const [key, value] of Object.entries(pathMap)) {
+        if (path.endsWith(key)) {
+          reportType = value;
+          break;
+        }
+      }
+
+      // 从路径提取股票代码（如 600519）
+      const stockMatch = path.match(/\/(sh|sz)\/(\d+)/);
+      const stockCode = stockMatch ? stockMatch[2] : '';
+
+      return `${stockCode}_${reportType}_${granularitySuffix}`;
+    } catch (e) {
+      return '';
+    }
+  }
+
   formatResult(data, url) {
     // 过滤只保留财务表格
     const allTables = data.tables || [];
@@ -1108,7 +1192,8 @@ class LixingerParser extends BaseParser {
       apiData: 0,
       pageFeatures: { suggestedType: 'lixinger', confidence: 100, signals: ['vue-spa', 'financial-data'] },
       tabsAndDropdowns: [],
-      dateFilters: []
+      dateFilters: [],
+      suggestedFilename: this.buildSuggestedFilename(url)
     };
   }
 }
