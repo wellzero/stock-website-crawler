@@ -564,13 +564,16 @@ class LixingerParser extends BaseParser {
           // 跳过空表或只有标签列的表
           if (pt.headers.length <= 2 && pt.rows.length === 0) continue;
 
+          // 过滤掉纯子标题行（如 Q1/Q2/Q3/Q4/原值/同比/环比 等）
+          const filteredRows = pt.rows.filter(r => !this.isSubHeaderRow(r));
+
           let existing = accumulatedData.find(t => t.index === pt.index);
           if (!existing) {
             // 第一次遇到这个表格索引：完整复制
             existing = {
               index: pt.index,
               headers: [...pt.headers],
-              rows: pt.rows.map(r => [...r]),
+              rows: filteredRows.map(r => [...r]),
               caption: ''
             };
             accumulatedData.push(existing);
@@ -1085,7 +1088,9 @@ class LixingerParser extends BaseParser {
     // 要求年份是独立列（如 "2001"），而不是嵌入在文本中（如 "上市时间2001-08-27"）
     const hasYearHeader = table.headers.some(h => /^\s*20\d{2}\s*$/.test(String(h))) ||
                           table.headers.some(h => /^\s*Q[1-4]\s*$/.test(String(h)));
-    if (hasYearHeader) return true;
+    if (hasYearHeader) {
+      return true;
+    }
 
     // 快速判断 2：表头包含明确的财务关键字 → 财务表
     // 同时排除公司估值指标（PE-TTM、PB、股息率等）
@@ -1121,6 +1126,18 @@ class LixingerParser extends BaseParser {
       /实际控制人/
     ];
     if (nonFinancialPatterns.some(p => p.test(allText))) return false;
+
+    // 排除纯子标题表格（只包含 Q1/Q2/Q3/Q4/原值/同比/环比/当期/累计/单季/年比 等）
+    const subHeaderTerms = ['Q1', 'Q2', 'Q3', 'Q4', '原值', '同比', '环比', '当期', '累计', '单季', '年比'];
+    const isSubHeaderOnly = table.rows.length > 0 && table.rows.every(row => {
+      const nonEmptyCells = row.filter(c => c && c.trim() !== '');
+      if (nonEmptyCells.length === 0) return true;
+      return nonEmptyCells.every(c => subHeaderTerms.includes(c.trim()));
+    });
+    if (isSubHeaderOnly) return false;
+
+    // 排除只有 "默认单位" 一个表头、无年份列的无意义表格
+    if (table.headers.length === 1 && table.headers[0].includes('默认单位')) return false;
 
     // 兜底：整表包含财务关键字或年份/季度，且有一定规模
     const hasFinancialTerm = financialTerms.some(term => allText.includes(term));
@@ -1193,6 +1210,9 @@ class LixingerParser extends BaseParser {
    */
   isCompanyOverviewTable(table) {
     if (!table || !table.headers) return false;
+    // 公司概况表格通常是小型表格（< 15 行），大表格（如资产负债表）即使包含
+    // PE-TTM/PB/股息率等行也不应被误判为公司概况
+    if (table.rows.length > 15) return false;
     const allText = [...table.headers, ...table.rows.flat()].join(' ');
     const overviewPatterns = [
       /PE-TTM.*PB.*股息率/,
@@ -1203,6 +1223,18 @@ class LixingerParser extends BaseParser {
       /实际控制人/,
     ];
     return overviewPatterns.some(p => p.test(allText));
+  }
+
+  /**
+   * 判断一行是否仅为季度/指标子标题行（如 "Q1|Q4|Q3|Q2|Q1" 或 "原值|同比|环比"）
+   * 这些行在 DOM 中作为视觉分隔，没有实际财务数据，应从输出中剔除
+   */
+  isSubHeaderRow(row) {
+    if (!row || row.length === 0) return true;
+    const subHeaderTerms = ['Q1', 'Q2', 'Q3', 'Q4', '原值', '同比', '环比', '当期', '累计', '单季', '年比'];
+    const nonEmptyCells = row.filter(c => c && c.trim() !== '');
+    if (nonEmptyCells.length === 0) return true;
+    return nonEmptyCells.every(c => subHeaderTerms.includes(c.trim()));
   }
 
   formatResult(data, url) {
@@ -1224,7 +1256,26 @@ class LixingerParser extends BaseParser {
       allTables = allTables.filter(t => !this.isCompanyOverviewTable(t));
     }
 
-    // 3. 只在真正的财务报表页面（资产负债表/利润表/现金流量表）上应用财务表格过滤
+    // 3. metric-section 产生的零散指标表格（如 PE-TTM、PB 等单值表格）
+    // 只在 fundamental 页保留，其他页面跳过
+    if (!isFundamentalPage) {
+      allTables = allTables.filter(t => {
+        // 跳过 source === 'metric-section' 的零散指标表格
+        if (t.source === 'metric-section') return false;
+        // 跳过只有 2 列且表头为 "指标 | 数值" 的小型估值表格
+        if (t.headers?.length === 2 && t.headers[0] === '指标' && t.headers[1] === '数值' && t.rows?.length <= 50) {
+          const allText = t.rows.flat().join(' ');
+          // 如果内容只包含数字、百分比或少量中文，判定为估值指标碎片
+          const isMetricFragment = !allText.includes('资产') && !allText.includes('负债')
+            && !allText.includes('收入') && !allText.includes('现金')
+            && !allText.includes('利润') && !allText.includes('成本');
+          if (isMetricFragment) return false;
+        }
+        return true;
+      });
+    }
+
+    // 4. 只在真正的财务报表页面（资产负债表/利润表/现金流量表）上应用财务表格过滤
     const isFinancialStatementPage = /\/(bs|ps|cfs|is|cashflow|income)\b/.test(url);
     const financialTables = isFinancialStatementPage
       ? allTables.filter(t => this.isFinancialTable(t))
