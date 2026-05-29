@@ -144,7 +144,17 @@ class LixingerParser extends BaseParser {
       await page.waitForTimeout(2000);
       await this.waitForLixingerContent(page);
 
-      // 处理分页表格 — 点击所有"下一页"按钮收集完整数据
+      // 先通过 URL page-index 参数遍历所有分页（避免 UI 点击遗漏）
+      const urlPaginatedData = await this.fetchPaginatedUrls(page, url);
+
+      // 将 URL 分页数据写入浏览器全局变量
+      if (urlPaginatedData.length > 0) {
+        await page.evaluate((data) => {
+          window.__lixingerPaginatedData = data;
+        }, urlPaginatedData);
+      }
+
+      // 再通过 UI 点击分页按钮收集数据（补充 URL 分页可能遗漏的）
       await this.clickPaginationAndCollectData(page);
 
       const extractedData = await this.extractLixingerData(page, url);
@@ -269,9 +279,9 @@ class LixingerParser extends BaseParser {
    */
   async clickPaginationAndCollectData(page) {
     try {
-      // 先收集当前页面所有表格的数据
+      // 先收集当前页面所有表格的数据（保留 URL 分页已累积的数据）
       await page.evaluate(() => {
-        window.__lixingerPaginatedData = [];
+        window.__lixingerPaginatedData = window.__lixingerPaginatedData || [];
         const tables = document.querySelectorAll('table');
         tables.forEach((table, idx) => {
           const headers = [];
@@ -293,7 +303,17 @@ class LixingerParser extends BaseParser {
               rows.push(cells.map(cell => cell.textContent?.trim() || ''));
             }
           });
-          window.__lixingerPaginatedData.push({ index: idx, headers, rows, caption: '' });
+          // 合并到已有数据（URL 分页可能已累积）
+          const existing = window.__lixingerPaginatedData.find(t => t.index === idx);
+          if (existing) {
+            existing.headers = headers.length > 0 ? headers : existing.headers;
+            for (const r of rows) {
+              const isDup = existing.rows.some(er => JSON.stringify(er) === JSON.stringify(r));
+              if (!isDup) existing.rows.push(r);
+            }
+          } else {
+            window.__lixingerPaginatedData.push({ index: idx, headers, rows, caption: '' });
+          }
         });
       });
 
@@ -349,8 +369,8 @@ class LixingerParser extends BaseParser {
           const tables = document.querySelectorAll('table');
           let newRowsAdded = 0;
           tables.forEach((table, idx) => {
-            if (!window.__lixingerPaginatedData[idx]) return;
-            const existing = window.__lixingerPaginatedData[idx];
+            const existing = window.__lixingerPaginatedData.find(t => t.index === idx);
+            if (!existing) return;
             const bodyRows = table.querySelectorAll('tbody tr');
             const rowsToProcess = bodyRows.length > 0 ? bodyRows : table.querySelectorAll('tr');
             rowsToProcess.forEach((row, rowIndex) => {
@@ -384,6 +404,140 @@ class LixingerParser extends BaseParser {
     } catch (error) {
       console.log(`  [Lixinger] 分页点击结束: ${error.message}`);
     }
+  }
+
+  /**
+   * 通过 URL page-index 参数遍历所有分页数据
+   * 理杏仁某些页面通过 page-index=0,1,2,3... 分页，需要直接构造 URL 访问
+   * 返回在 Node.js 中累积的表格数据数组
+   */
+  async fetchPaginatedUrls(page, baseUrl) {
+    const accumulatedData = []; // 在 Node.js 中累积，避免 page.goto 刷新丢失
+
+    try {
+      const urlObj = new URL(baseUrl);
+      const path = urlObj.pathname;
+
+      // 只处理财务数据页面（bs/ps/cfs 等）
+      const paginatedPaths = ['/bs', '/ps', '/cfs', '/is', '/cashflow', '/income'];
+      const isPaginatedPage = paginatedPaths.some(p => path.endsWith(p) || path.includes(p));
+      if (!isPaginatedPage) return accumulatedData;
+
+      console.log(`  [Lixinger] 开始 URL 分页遍历...`);
+
+      const buildUrl = (pageIndex) => {
+        const u = new URL(baseUrl);
+        u.searchParams.set('page-index', String(pageIndex));
+        if (!u.searchParams.has('modulate-type')) u.searchParams.set('modulate-type', 'auto');
+        if (!u.searchParams.has('fs-owner-type')) u.searchParams.set('fs-owner-type', 'consolidated');
+        if (!u.searchParams.has('granularity')) u.searchParams.set('granularity', 'q');
+        if (!u.searchParams.has('data-display-type')) u.searchParams.set('data-display-type', 'number');
+        if (!u.searchParams.has('with-latest-data')) u.searchParams.set('with-latest-data', 'false');
+        if (!u.searchParams.has('show-value-rebuilt-data')) u.searchParams.set('show-value-rebuilt-data', 'false');
+        if (!u.searchParams.has('data-report-type')) u.searchParams.set('data-report-type', 'all');
+        if (!u.searchParams.has('data-metrics-types')) u.searchParams.set('data-metrics-types', 't,c,c2y,yoy,coc');
+        if (!u.searchParams.has('compare-stock-ids')) u.searchParams.set('compare-stock-ids', '');
+        if (!u.searchParams.has('start-date')) {
+          const startYear = new Date().getFullYear() - 30;
+          const today = new Date().toISOString().split('T')[0];
+          u.searchParams.set('start-date', `${startYear}-01-01`);
+          u.searchParams.set('end-date', today);
+        }
+        return u.toString();
+      };
+
+      let pageIndex = 0;
+      const maxPages = 100;
+      let emptyCount = 0;
+      const maxEmpty = 3;
+
+      while (pageIndex < maxPages && emptyCount < maxEmpty) {
+        const pageUrl = buildUrl(pageIndex);
+        const currentUrl = page.url();
+
+        if (!currentUrl.includes(`page-index=${pageIndex}`)) {
+          console.log(`  [Lixinger] 导航到 page-index=${pageIndex}...`);
+          await page.goto(pageUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+          await this.waitForLixingerContent(page);
+          await page.waitForTimeout(1500);
+        }
+
+        // 提取当前页表格数据（返回给 Node.js）
+        const pageTables = await page.evaluate(() => {
+          const results = [];
+          const tables = document.querySelectorAll('table');
+          tables.forEach((table, idx) => {
+            const headers = [];
+            const headerCells = table.querySelectorAll('thead th, thead td');
+            headerCells.forEach(cell => headers.push(cell.textContent?.trim() || ''));
+            if (headers.length === 0) {
+              const firstRow = table.querySelector('tr');
+              if (firstRow) {
+                firstRow.querySelectorAll('th, td').forEach(cell => headers.push(cell.textContent?.trim() || ''));
+              }
+            }
+
+            const rows = [];
+            const bodyRows = table.querySelectorAll('tbody tr');
+            const rowsToProcess = bodyRows.length > 0 ? bodyRows : table.querySelectorAll('tr');
+            rowsToProcess.forEach((row, rowIndex) => {
+              if (rowIndex === 0 && headers.length > 0 && bodyRows.length === 0) return;
+              const cells = Array.from(row.querySelectorAll('td, th'));
+              if (cells.length === 0) return;
+              const rowData = cells.map(cell => cell.textContent?.trim() || '');
+              if (rowData.every(c => c === '')) return;
+              rows.push(rowData);
+            });
+
+            if (headers.length > 0 || rows.length > 0) {
+              results.push({ index: idx, headers, rows, caption: '' });
+            }
+          });
+          return results;
+        });
+
+        // 合并到 accumulatedData（按表格索引合并行，去重）
+        let totalNewRows = 0;
+        for (const pt of pageTables) {
+          let existing = accumulatedData.find(t => t.index === pt.index);
+          if (!existing) {
+            existing = { index: pt.index, headers: pt.headers, rows: [], caption: '' };
+            accumulatedData.push(existing);
+          }
+          for (const rowData of pt.rows) {
+            const isDuplicate = existing.rows.some(r => JSON.stringify(r) === JSON.stringify(rowData));
+            if (!isDuplicate) {
+              existing.rows.push(rowData);
+              totalNewRows++;
+            }
+          }
+        }
+
+        if (totalNewRows === 0) {
+          emptyCount++;
+          console.log(`  [Lixinger] page-index=${pageIndex} 无新数据 (${emptyCount}/${maxEmpty})`);
+        } else {
+          emptyCount = 0;
+          console.log(`  [Lixinger] page-index=${pageIndex} 新增 ${totalNewRows} 行`);
+        }
+
+        pageIndex++;
+      }
+
+      // 导航回原始 URL，确保后续 UI 点击在原页面执行
+      const currentUrl = page.url();
+      if (!currentUrl.startsWith(baseUrl.split('?')[0])) {
+        console.log(`  [Lixinger] 导航回原始页面...`);
+        await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await this.waitForLixingerContent(page);
+      }
+
+      console.log(`  [Lixinger] URL 分页遍历完成，共检查 ${pageIndex} 页，累积 ${accumulatedData.length} 个表格`);
+    } catch (error) {
+      console.log(`  [Lixinger] URL 分页遍历结束: ${error.message}`);
+    }
+
+    return accumulatedData;
   }
 
   /**
