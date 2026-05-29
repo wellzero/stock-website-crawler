@@ -175,6 +175,11 @@ class MarkdownGenerator {
   generateLixinger(pageData) {
     const sections = [];
 
+    // 添加源 URL
+    if (pageData.url) {
+      sections.push(`## 源URL\n\n${pageData.url}`);
+    }
+
     if (pageData.tables && pageData.tables.length > 0) {
       pageData.tables.forEach((table) => {
         const markdown = this.tableToMarkdown(table);

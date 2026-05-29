@@ -1130,8 +1130,6 @@ class LixingerParser extends BaseParser {
     try {
       const u = new URL(url);
       const path = u.pathname;
-      const granularity = u.searchParams.get('granularity') || 'q';
-      const granularitySuffix = { y: 'yearly', q: 'quarter', h: 'half_year' }[granularity] || 'quarter';
 
       // 从路径推断报表类型
       const pathMap = {
@@ -1142,7 +1140,7 @@ class LixingerParser extends BaseParser {
         '/cashflow': '现金流量表',
         '/income': '利润表'
       };
-      let reportType = '财务数据';
+      let reportType = '';
       for (const [key, value] of Object.entries(pathMap)) {
         if (path.endsWith(key)) {
           reportType = value;
@@ -1154,21 +1152,39 @@ class LixingerParser extends BaseParser {
       const stockMatch = path.match(/\/(sh|sz)\/(\d+)/);
       const stockCode = stockMatch ? stockMatch[2] : '';
 
-      return `${stockCode}_${reportType}_${granularitySuffix}`;
+      // 只在真正的财务报表页面（bs/ps/cfs）添加粒度后缀
+      if (reportType) {
+        const granularity = u.searchParams.get('granularity') || 'q';
+        const granularitySuffix = { y: 'yearly', q: 'quarter', h: 'half_year' }[granularity] || 'quarter';
+        return `${stockCode}_${reportType}_${granularitySuffix}`;
+      }
+
+      // 非财务报表页面：用 URL 路径最后几段拼接文件名（如 subsidiary-companies, fundamental_valuation_primary）
+      const pathParts = path.split('/').filter(p => p && !/^\d+$/.test(p) && !['sh', 'sz', 'analytics', 'company', 'detail', 'open', 'api'].includes(p));
+      const suffix = pathParts.join('_');
+      if (suffix) {
+        return `${stockCode}_${suffix}`;
+      }
+      return `${stockCode}_data`;
     } catch (e) {
       return '';
     }
   }
 
   formatResult(data, url) {
-    // 过滤只保留财务表格
     const allTables = data.tables || [];
-    const financialTables = allTables.filter(t => this.isFinancialTable(t));
+
+    // 只在真正的财务报表页面（资产负债表/利润表/现金流量表）上应用财务表格过滤
+    // 对于 fundamental、valuation 等概览页面，保留所有表格以免输出为空
+    const isFinancialStatementPage = /\/(bs|ps|cfs|is|cashflow|income)\b/.test(url);
+    const financialTables = isFinancialStatementPage
+      ? allTables.filter(t => this.isFinancialTable(t))
+      : allTables;
 
     // 只保留表格类型的 mainContent
     const financialMainContent = (data.mainContent || [])
       .filter(item => item.type === 'table')
-      .filter(item => this.isFinancialTable(item));
+      .filter(item => !isFinancialStatementPage || this.isFinancialTable(item));
 
     return {
       type: 'lixinger',

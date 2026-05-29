@@ -5,7 +5,7 @@
   ],
   "urlRules": {
     "include": [
-      ".*company/detail/sh/600519/600519/fundamental/valuation/primary.*"
+      ".*company/detail/sh/600519/600519.*"
     ],
     "exclude": [
       ".*login.*",
