@@ -148,14 +148,20 @@ class LixingerParser extends BaseParser {
       const urlPaginatedData = await this.fetchPaginatedUrls(page, url);
 
       // 将 URL 分页数据写入浏览器全局变量
-      if (urlPaginatedData.length > 0) {
+      const hasUrlPaginatedData = urlPaginatedData.length > 0;
+      const hasWideColumns = urlPaginatedData.some(t => t.headers.length > 20);
+      if (hasUrlPaginatedData) {
         await page.evaluate((data) => {
           window.__lixingerPaginatedData = data;
         }, urlPaginatedData);
       }
 
-      // 再通过 UI 点击分页按钮收集数据（补充 URL 分页可能遗漏的）
-      await this.clickPaginationAndCollectData(page);
+      // 如果 URL 分页已收集到宽列数据（多页合并），跳过 UI 点击避免覆盖
+      if (!hasWideColumns) {
+        await this.clickPaginationAndCollectData(page);
+      } else {
+        console.log('  [Lixinger] URL 分页已收集完整数据，跳过 UI 点击');
+      }
 
       const extractedData = await this.extractLixingerData(page, url);
       Object.assign(context.data, extractedData);
@@ -496,29 +502,88 @@ class LixingerParser extends BaseParser {
           return results;
         });
 
-        // 合并到 accumulatedData（按表格索引合并行，去重）
-        let totalNewRows = 0;
+        // 水平合并：每个 page-index 显示相同行、不同列（年份），需要合并列
+        let totalNewCols = 0;
         for (const pt of pageTables) {
+          // 跳过公司概况表（PE-TTM 等）
+          if (pt.headers[0]?.includes('PE-TTM') || pt.headers[0]?.includes('贵州茅台 沪股通')) continue;
+          // 跳过空表或只有标签列的表
+          if (pt.headers.length <= 2 && pt.rows.length === 0) continue;
+
           let existing = accumulatedData.find(t => t.index === pt.index);
           if (!existing) {
-            existing = { index: pt.index, headers: pt.headers, rows: [], caption: '' };
+            // 第一次遇到这个表格索引：完整复制
+            existing = {
+              index: pt.index,
+              headers: [...pt.headers],
+              rows: pt.rows.map(r => [...r]),
+              caption: ''
+            };
             accumulatedData.push(existing);
-          }
-          for (const rowData of pt.rows) {
-            const isDuplicate = existing.rows.some(r => JSON.stringify(r) === JSON.stringify(rowData));
-            if (!isDuplicate) {
-              existing.rows.push(rowData);
-              totalNewRows++;
+            totalNewCols += pt.headers.length > 0 ? pt.headers.length - 1 : 0;
+          } else {
+            // 已存在：水平合并列
+            const labelHeader = existing.headers[0];
+            const existingDataHeaders = existing.headers.slice(1);
+            const newDataHeaders = pt.headers.slice(1);
+
+            // 收集新出现的列头
+            const addedHeaders = [];
+            for (const h of newDataHeaders) {
+              if (!existingDataHeaders.includes(h)) {
+                existingDataHeaders.push(h);
+                addedHeaders.push(h);
+              }
+            }
+
+            if (addedHeaders.length === 0) continue;
+
+            existing.headers = [labelHeader, ...existingDataHeaders];
+            totalNewCols += addedHeaders.length;
+
+            // 为每一行追加新列的值
+            const newRowsMap = new Map();
+            for (const row of pt.rows) {
+              newRowsMap.set(row[0], row.slice(1));
+            }
+
+            // 更新已有行
+            for (const existingRow of existing.rows) {
+              const label = existingRow[0];
+              const newValues = newRowsMap.get(label);
+              if (newValues) {
+                for (const h of addedHeaders) {
+                  const idx = newDataHeaders.indexOf(h);
+                  existingRow.push(idx >= 0 && idx < newValues.length ? newValues[idx] : '');
+                }
+                newRowsMap.delete(label);
+              } else {
+                // 新页没有这一行，补空值
+                for (const h of addedHeaders) {
+                  existingRow.push('');
+                }
+              }
+            }
+
+            // 添加新页独有的行
+            for (const [label, newValues] of newRowsMap) {
+              const row = [label];
+              // 旧列补空
+              for (const h of existingDataHeaders) {
+                const idx = newDataHeaders.indexOf(h);
+                row.push(idx >= 0 && idx < newValues.length ? newValues[idx] : '');
+              }
+              existing.rows.push(row);
             }
           }
         }
 
-        if (totalNewRows === 0) {
+        if (totalNewCols === 0) {
           emptyCount++;
-          console.log(`  [Lixinger] page-index=${pageIndex} 无新数据 (${emptyCount}/${maxEmpty})`);
+          console.log(`  [Lixinger] page-index=${pageIndex} 无新列 (${emptyCount}/${maxEmpty})`);
         } else {
           emptyCount = 0;
-          console.log(`  [Lixinger] page-index=${pageIndex} 新增 ${totalNewRows} 行`);
+          console.log(`  [Lixinger] page-index=${pageIndex} 新增 ${totalNewCols} 列`);
         }
 
         pageIndex++;
