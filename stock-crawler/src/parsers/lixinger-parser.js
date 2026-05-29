@@ -115,11 +115,18 @@ class LixingerParser extends BaseParser {
       // 只拦截来自 lixinger.com 的 JSON 响应
       if (!responseUrl.includes('lixinger.com')) return;
 
-      // 跳过用户、通知、追踪等非数据端点
+      // 跳过用户、通知、追踪、股票列表等非数据端点
       const skipPatterns = [
         '/user/users/', '/user/notifications/', '/site/notifications/',
         '/tracking.', '/api/send', '/page-configs/list-of-indexes',
-        '/auth/', '/login', '/logout'
+        '/auth/', '/login', '/logout',
+        // 股票集合/关注列表/指数成分——不是当前页面数据
+        '/stock-collections', '/stocks/followed', '/stocks/by-ids',
+        '/ii/constituents/list', '/ii/fs-metrics/',
+        // 用户设置/自定义指标——不是财务数据
+        '/ugd/settings-groups', '/ugd/custom-fs-metrics/',
+        // 日期范围/指标元数据——不是实际数据值
+        '/fs-metrics/list/date-range', '/fs-metrics/list-info',
       ];
       if (skipPatterns.some(p => responseUrl.includes(p))) return;
 
