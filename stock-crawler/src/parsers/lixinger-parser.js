@@ -1275,7 +1275,36 @@ class LixingerParser extends BaseParser {
       });
     }
 
-    // 4. 只在真正的财务报表页面（资产负债表/利润表/现金流量表）上应用财务表格过滤
+    // 4. 过滤 API 原始数据表格（字段名为英文代码如 stockId, candlestick._id, date 等）
+    // 这些表格在所有页面都应排除，因为它们包含内部字段而非人类可读数据
+    allTables = allTables.filter(t => {
+      // 4a. 直接排除 source === 'api' 的表格（已在 convertAPIDataToTables 中标记）
+      if (t.source === 'api') return false;
+      // 4b. 排除表头包含典型 API 内部字段的表格
+      const apiFieldPatterns = [
+        /^(stockId|date|ownerType|dataType|sp|candlestick\.|stock\.|q\.bs\.|q\.is\.|q\.cf\.)/,
+        /^[a-f0-9]{24}$/,  // MongoDB ObjectId
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/  // ISO timestamp
+      ];
+      const hasApiFieldHeader = t.headers.some(h => apiFieldPatterns.some(p => p.test(String(h))));
+      if (hasApiFieldHeader) return false;
+      // 4c. 排除整表内容几乎全是英文代码/ID/布尔值的表格
+      const allText = [...t.headers, ...t.rows.flat()].join(' ');
+      const isMostlyCodes = allText.split(/\s+/).filter(w => w.length > 0).length > 0 &&
+        allText.split(/\s+/).filter(w => /^[a-zA-Z_][a-zA-Z0-9_.]*$/.test(w) || w === 'true' || w === 'false' || /^[a-f0-9]{24}$/.test(w)).length /
+        allText.split(/\s+/).filter(w => w.length > 0).length > 0.7;
+      if (isMostlyCodes && t.headers.length > 5) return false;
+      return true;
+    });
+
+    // 5. 排除空表格（0 行数据）和单列表头为 "#" 的分页 artifact 表格
+    allTables = allTables.filter(t => {
+      if (t.rows.length === 0) return false;
+      if (t.headers.length === 1 && t.headers[0] === '#') return false;
+      return true;
+    });
+
+    // 6. 只在真正的财务报表页面（资产负债表/利润表/现金流量表）上应用财务表格过滤
     const isFinancialStatementPage = /\/(bs|ps|cfs|is|cashflow|income)\b/.test(url);
     const financialTables = isFinancialStatementPage
       ? allTables.filter(t => this.isFinancialTable(t))
