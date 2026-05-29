@@ -861,26 +861,30 @@ ${block.code}
         }
         
         const fs = await import('fs');
-        filepath = `${this.pagesDir}/${filename}.md`;
+        const ext = pageData.suggestedExtension || 'md';
+        let filenameWithExt = `${filename}.${ext}`;
+        filepath = `${this.pagesDir}/${filenameWithExt}`;
         if (fs.existsSync(filepath)) {
           const crypto = await import('crypto');
           const urlHash = crypto.createHash('md5').update(url).digest('hex').substring(0, 8);
           filename = `${filename}_${urlHash}`;
-          this.logger.info(`File exists, using unique filename: ${filename}.md`);
+          filenameWithExt = `${filename}.${ext}`;
+          this.logger.info(`File exists, using unique filename: ${filenameWithExt}`);
         }
-        
+
         this.markdownGenerator.saveToFile(
           markdown,
-          filename,
+          filenameWithExt,
           this.pagesDir
         );
       }
-      
+
       if (pageData.skipDefaultMarkdownOutput) {
         this.logger.info('Saved: Tsanghi per-menu markdown files');
       } else {
         this.statsTracker.incrementFilesGenerated();
-        this.logger.info(`Saved: ${filename}.md`);
+        const ext = pageData.suggestedExtension || 'md';
+        this.logger.info(`Saved: ${filename}.${ext}`);
       }
 
       // Close page

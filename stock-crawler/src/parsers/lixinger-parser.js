@@ -1193,7 +1193,8 @@ class LixingerParser extends BaseParser {
       pageFeatures: { suggestedType: 'lixinger', confidence: 100, signals: ['vue-spa', 'financial-data'] },
       tabsAndDropdowns: [],
       dateFilters: [],
-      suggestedFilename: this.buildSuggestedFilename(url)
+      suggestedFilename: this.buildSuggestedFilename(url),
+      suggestedExtension: 'csv'
     };
   }
 }
