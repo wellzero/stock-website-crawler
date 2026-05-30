@@ -189,6 +189,14 @@ class MarkdownGenerator {
       });
     }
 
+    // 添加页面特有的说明文字（数据来源、更新频率等）
+    if (pageData.paragraphs && pageData.paragraphs.length > 0) {
+      sections.push('');
+      pageData.paragraphs.forEach(p => {
+        sections.push(`> ${p}`);
+      });
+    }
+
     return sections.join('\n\n');
   }
 
