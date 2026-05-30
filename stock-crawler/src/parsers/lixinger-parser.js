@@ -231,10 +231,23 @@ class LixingerParser extends BaseParser {
 
       // 分页页面：每页数据存为独立文件（如 资产负债表_quarter_0.md, _1.md...）
       if (isPaginatedPage && options.pagesDir) {
-        const paginatedPages = await this.fetchPaginatedUrls(page, url, { separatePages: true });
-        if (paginatedPages.length > 0) {
-          const baseFilename = this.buildSuggestedFilename(url);
-          const fs = await import('fs');
+        // /m 页面需要同时下载季报(q)和年报(y)
+        const granularities = path.endsWith('/m') ? ['q', 'y'] : [null];
+        const granularityNames = { q: 'quarter', y: 'yearly' };
+        let anyPagesSaved = false;
+        const fs = await import('fs');
+
+        for (const gran of granularities) {
+          const pageUrlWithGran = gran !== null
+            ? `${url}${url.includes('?') ? '&' : '?'}granularity=${gran}`
+            : url;
+          const paginatedPages = await this.fetchPaginatedUrls(page, pageUrlWithGran, { separatePages: true });
+          if (paginatedPages.length === 0) continue;
+
+          anyPagesSaved = true;
+          const baseFilename = this.buildSuggestedFilename(pageUrlWithGran);
+          const granSuffix = gran !== null ? `_${granularityNames[gran]}` : '';
+
           for (const { pageIndex, tables } of paginatedPages) {
             // 过滤只有 1 列的表格（div-grid 误提取的指标列表）
             let validTables = tables.filter(t => t.headers && t.headers.length > 1);
@@ -260,7 +273,7 @@ class LixingerParser extends BaseParser {
             if (validTables.length === 0) continue;
 
             const sections = [];
-            const pageUrl = `${url}${url.includes('?') ? '&' : '?'}page-index=${pageIndex}`;
+            const pageUrl = `${pageUrlWithGran}${pageUrlWithGran.includes('?') ? '&' : '?'}page-index=${pageIndex}`;
             sections.push(`## 源URL\n\n${pageUrl}`);
             for (const table of validTables) {
               sections.push('');
@@ -271,12 +284,12 @@ class LixingerParser extends BaseParser {
               }
             }
             const markdown = sections.join('\n');
-            const filename = `${baseFilename}_${pageIndex}.md`;
+            const filename = `${baseFilename}${granSuffix}_${pageIndex}.md`;
             const filepath = `${options.pagesDir}/${filename}`;
             if (fs.existsSync(filepath)) {
               const crypto = await import('crypto');
               const urlHash = crypto.createHash('md5').update(pageUrl).digest('hex').substring(0, 8);
-              const uniqueFilename = `${baseFilename}_${pageIndex}_${urlHash}.md`;
+              const uniqueFilename = `${baseFilename}${granSuffix}_${pageIndex}_${urlHash}.md`;
               fs.writeFileSync(`${options.pagesDir}/${uniqueFilename}`, markdown, 'utf-8');
               console.log(`  [Lixinger] 已保存分页文件: ${uniqueFilename}`);
             } else {
@@ -284,8 +297,11 @@ class LixingerParser extends BaseParser {
               console.log(`  [Lixinger] 已保存分页文件: ${filename}`);
             }
           }
+        }
+
+        if (anyPagesSaved) {
           context.data.skipDefaultMarkdownOutput = true;
-          context.data.suggestedFilename = baseFilename;
+          context.data.suggestedFilename = this.buildSuggestedFilename(url);
           return this.formatResult(context.data, url);
         }
       }
@@ -1907,11 +1923,17 @@ class LixingerParser extends BaseParser {
       const stockMatch = path.match(/\/(sh|sz)\/(\d+)/);
       const stockCode = stockMatch ? stockMatch[2] : '';
 
-      // 只在真正的财务报表页面（bs/ps/cfs）添加粒度后缀
+      // 在财务报表页面（bs/ps/cfs）添加粒度后缀
+      // /m 页面的粒度后缀在 parse() 中单独处理
       if (reportType) {
         const granularity = u.searchParams.get('granularity') || 'q';
         const granularitySuffix = { y: 'yearly', q: 'quarter', h: 'half_year' }[granularity] || 'quarter';
         return `${stockCode}_${reportType}_${granularitySuffix}`;
+      }
+
+      // /m (重大事项) 页面单独处理
+      if (path.endsWith('/m')) {
+        return `${stockCode}_major-issues`;
       }
 
       // 非财务报表页面：用 URL 路径最后几段拼接文件名（如 subsidiary-companies, fundamental_valuation_primary）
