@@ -26,6 +26,14 @@ class LixingerParser extends BaseParser {
   }
 
   /**
+   * 从 URL 中提取 stockId
+   */
+  extractStockId(url) {
+    const match = url.match(/\/(sh|sz|bj)\/\d+\/(\d+)/);
+    return match ? match[2] : null;
+  }
+
+  /**
    * 通过内容特征检测
    */
   async detectByContent(page) {
@@ -59,8 +67,8 @@ class LixingerParser extends BaseParser {
     const linkFinder = new LinkFinder();
     const links = await linkFinder.extractLinks(page, urlRules, { fetchMethod: 'playwright' });
 
-    // 为财务页面添加三种粒度（年报/季报/半年报）
-    const financialPaths = ['/bs', '/ps', '/cfs', '/is'];
+    // 为财务页面添加三种粒度（年报/季报/半年报），/m（重大事项）也有 yearly/quarter
+    const financialPaths = ['/bs', '/ps', '/cfs', '/is', '/m'];
     const extraLinks = [];
     const granularities = [
       { key: 'y', suffix: 'yearly' },
@@ -122,7 +130,7 @@ class LixingerParser extends BaseParser {
         '/auth/', '/login', '/logout',
         // 股票集合/关注列表/指数成分——不是当前页面数据
         '/stock-collections', '/stocks/followed', '/stocks/by-ids',
-        '/ii/constituents/list', '/ii/fs-metrics/',
+        '/ii/constituents/list',
         // 用户设置/自定义指标——不是财务数据
         '/ugd/settings-groups', '/ugd/custom-fs-metrics/',
         // 日期范围——不是实际数据值
@@ -196,11 +204,30 @@ class LixingerParser extends BaseParser {
       await page.waitForTimeout(2000);
       await this.waitForLixingerContent(page);
 
-      // 检查是否是分页页面（bs/ps/cfs/is）
+      // 对于营收构成页面，点击最大年份按钮（20年）以获取全部历史数据
+      if (url.includes('operation-revenue-constitution')) {
+        try {
+          const maxYearBtn = await page.locator('.btn-group .btn:has-text("20 年"), .btn-group label:has-text("20 年")').first();
+          if (await maxYearBtn.isVisible()) {
+            const isActive = await maxYearBtn.evaluate(el => el.classList.contains('active'));
+            if (!isActive) {
+              console.log('  [Lixinger] 点击 "20 年" 按钮以获取最大年份数据...');
+              await maxYearBtn.click();
+              await page.waitForTimeout(3000);
+              await this.waitForLixingerContent(page);
+            }
+          }
+        } catch (e) {
+          // 忽略按钮点击错误
+        }
+      }
+
+      // 检查是否是分页页面（bs/ps/cfs/is/m）
       const urlObj = new URL(url);
       const path = urlObj.pathname;
-      const paginatedPaths = ['/bs', '/ps', '/cfs', '/is'];
+      const paginatedPaths = ['/bs', '/ps', '/cfs', '/is', '/m'];
       const isPaginatedPage = paginatedPaths.some(p => path.endsWith(p));
+      const isFinancialStatement = ['/bs', '/ps', '/cfs', '/is'].some(p => path.endsWith(p));
 
       // 分页页面：每页数据存为独立文件（如 资产负债表_quarter_0.md, _1.md...）
       if (isPaginatedPage && options.pagesDir) {
@@ -213,20 +240,22 @@ class LixingerParser extends BaseParser {
             let validTables = tables.filter(t => t.headers && t.headers.length > 1);
             if (validTables.length === 0) continue;
 
-            // 过滤掉非财务报表数据（员工情况、股本估值等不属于资产负债表）
-            validTables = validTables.map(table => {
-              const reportRows = table.rows.filter(row => {
-                const label = row[0] || '';
-                // 跳过章节标题行
-                if (label.startsWith('四、员工情况') || label.startsWith('五、股本、股东以及估值')) return false;
-                // 跳过员工相关行
-                if (/^(员工人数|博士人数|硕士人数|学士人数|大专人数|高中及以下人数|生产人员人数|销售人员人数|技术人员人数|财务人员人数|行政人员人数|其他人员人数)$/.test(label)) return false;
-                // 跳过股本估值相关行
-                if (/^(市值|总股数|流通股数|总股东人数|A股股东人数|第一大股东持仓|前十大股东持仓|前十大流通股东持仓|进公募基金前十大持仓|公募基金持仓|公募基金\+自由流通股东持仓|PE-TTM|PE-TTM\(扣非\)|PB|PB\(不含商誉\)|PS-TTM|PCF-TTM|股息率)$/.test(label)) return false;
-                return true;
-              });
-              return { ...table, rows: reportRows };
-            }).filter(t => t.rows.length > 0);
+            // 财务报表页面：过滤掉非财务报表数据（员工情况、股本估值等不属于资产负债表）
+            if (isFinancialStatement) {
+              validTables = validTables.map(table => {
+                const reportRows = table.rows.filter(row => {
+                  const label = row[0] || '';
+                  // 跳过章节标题行
+                  if (label.startsWith('四、员工情况') || label.startsWith('五、股本、股东以及估值')) return false;
+                  // 跳过员工相关行
+                  if (/^(员工人数|博士人数|硕士人数|学士人数|大专人数|高中及以下人数|生产人员人数|销售人员人数|技术人员人数|财务人员人数|行政人员人数|其他人员人数)$/.test(label)) return false;
+                  // 跳过股本估值相关行
+                  if (/^(市值|总股数|流通股数|总股东人数|A股股东人数|第一大股东持仓|前十大股东持仓|前十大流通股东持仓|进公募基金前十大持仓|公募基金持仓|公募基金\+自由流通股东持仓|PE-TTM|PE-TTM\(扣非\)|PB|PB\(不含商誉\)|PS-TTM|PCF-TTM|股息率)$/.test(label)) return false;
+                  return true;
+                });
+                return { ...table, rows: reportRows };
+              }).filter(t => t.rows.length > 0);
+            }
 
             if (validTables.length === 0) continue;
 
@@ -283,6 +312,26 @@ class LixingerParser extends BaseParser {
         console.log('  [Lixinger] fundamental 分析页面跳过 UI 分页点击');
       } else {
         await this.clickPaginationAndCollectData(page);
+      }
+
+      // chart-maker/fs-metrics 页面：通过 API 下载所有指标的所有计算方式数据
+      if (url.includes('chart-maker/fs-metrics')) {
+        try {
+          const stockId = this.extractStockId(url);
+          if (stockId) {
+            console.log('  [Lixinger] chart-maker/fs-metrics 页面，通过 API 获取全量指标数据...');
+            const fsMetricsData = await this.fetchAllChartMakerMetrics(page, stockId);
+            if (fsMetricsData && fsMetricsData.length > 0) {
+              const table = this.convertFsMetricsListToTable(fsMetricsData, url);
+              if (table) {
+                context.data.tables = [...(context.data.tables || []), table];
+                console.log(`  [Lixinger] 已添加 chart-maker 数据: ${table.rows.length} 行 x ${table.headers.length} 列`);
+              }
+            }
+          }
+        } catch (e) {
+          console.log('  [Lixinger] chart-maker API 获取失败:', e.message);
+        }
       }
 
       const extractedData = await this.extractLixingerData(page, url);
@@ -548,9 +597,10 @@ class LixingerParser extends BaseParser {
       const urlObj = new URL(baseUrl);
       const path = urlObj.pathname;
 
-      // 只处理财务数据页面（bs/ps/cfs 等），排除 /fundamental/* 分析页面
-      const paginatedPaths = ['/bs', '/ps', '/cfs', '/is'];
+      // 处理财务数据页面（bs/ps/cfs/is）和重大事项页面（/m），排除 /fundamental/* 分析页面
+      const paginatedPaths = ['/bs', '/ps', '/cfs', '/is', '/m'];
       const isPaginatedPage = paginatedPaths.some(p => path.endsWith(p));
+      const isFinancialStatement = ['/bs', '/ps', '/cfs', '/is'].some(p => path.endsWith(p));
       if (!isPaginatedPage) return separatePages ? pagesData : accumulatedData;
 
       console.log(`  [Lixinger] 开始 URL 分页遍历...`);
@@ -558,20 +608,26 @@ class LixingerParser extends BaseParser {
       const buildUrl = (pageIndex) => {
         const u = new URL(baseUrl);
         u.searchParams.set('page-index', String(pageIndex));
-        if (!u.searchParams.has('modulate-type')) u.searchParams.set('modulate-type', 'auto');
-        if (!u.searchParams.has('fs-owner-type')) u.searchParams.set('fs-owner-type', 'consolidated');
-        if (!u.searchParams.has('granularity')) u.searchParams.set('granularity', 'q');
-        if (!u.searchParams.has('data-display-type')) u.searchParams.set('data-display-type', 'number');
-        if (!u.searchParams.has('with-latest-data')) u.searchParams.set('with-latest-data', 'false');
-        if (!u.searchParams.has('show-value-rebuilt-data')) u.searchParams.set('show-value-rebuilt-data', 'false');
-        if (!u.searchParams.has('data-report-type')) u.searchParams.set('data-report-type', 'all');
-        if (!u.searchParams.has('data-metrics-types')) u.searchParams.set('data-metrics-types', 't,c,c2y,yoy,coc');
-        if (!u.searchParams.has('compare-stock-ids')) u.searchParams.set('compare-stock-ids', '');
-        if (!u.searchParams.has('start-date')) {
-          const startYear = new Date().getFullYear() - 30;
-          const today = new Date().toISOString().split('T')[0];
-          u.searchParams.set('start-date', `${startYear}-01-01`);
-          u.searchParams.set('end-date', today);
+        if (isFinancialStatement) {
+          // 财务报表页面专用参数
+          if (!u.searchParams.has('modulate-type')) u.searchParams.set('modulate-type', 'auto');
+          if (!u.searchParams.has('fs-owner-type')) u.searchParams.set('fs-owner-type', 'consolidated');
+          if (!u.searchParams.has('granularity')) u.searchParams.set('granularity', 'q');
+          if (!u.searchParams.has('data-display-type')) u.searchParams.set('data-display-type', 'number');
+          if (!u.searchParams.has('with-latest-data')) u.searchParams.set('with-latest-data', 'false');
+          if (!u.searchParams.has('show-value-rebuilt-data')) u.searchParams.set('show-value-rebuilt-data', 'false');
+          if (!u.searchParams.has('data-report-type')) u.searchParams.set('data-report-type', 'all');
+          if (!u.searchParams.has('data-metrics-types')) u.searchParams.set('data-metrics-types', 't,c,c2y,yoy,coc');
+          if (!u.searchParams.has('compare-stock-ids')) u.searchParams.set('compare-stock-ids', '');
+          if (!u.searchParams.has('start-date')) {
+            const startYear = new Date().getFullYear() - 30;
+            const today = new Date().toISOString().split('T')[0];
+            u.searchParams.set('start-date', `${startYear}-01-01`);
+            u.searchParams.set('end-date', today);
+          }
+        } else if (path.endsWith('/m')) {
+          // 重大事项页面参数：只保留 granularity（年报/季报）
+          if (!u.searchParams.has('granularity')) u.searchParams.set('granularity', 'q');
         }
         return u.toString();
       };
@@ -1227,30 +1283,36 @@ class LixingerParser extends BaseParser {
           continue;
         }
 
-        const firstItem = data[0];
-        const keys = Object.keys(firstItem);
+        // 特殊处理：简单时间序列数据（如波动率、股价等 {date, value} 格式）
+        if (this.isSimpleTimeSeries(data)) {
+          const tsTable = this.convertSimpleTimeSeriesToTable(data, url);
+          if (tsTable) {
+            tables.push(tsTable);
+          }
+          continue;
+        }
 
-        const flattenedData = data.map(item => {
-          const flat = {};
-          for (const key of keys) {
-            const value = item[key];
-            if (value && typeof value === 'object' && !Array.isArray(value)) {
-              for (const subKey of Object.keys(value)) {
-                const subValue = value[subKey];
-                if (subValue && typeof subValue === 'object' && !Array.isArray(subValue)) {
-                  for (const subSubKey of Object.keys(subValue)) {
-                    flat[`${key}.${subKey}.${subSubKey}`] = subValue[subSubKey];
-                  }
-                } else {
-                  flat[`${key}.${subKey}`] = subValue;
-                }
+        // 递归展平对象，同时自动解包 {t: value} / {value: value} 等包装器
+        const flattenObj = (obj, prefix = '') => {
+          const result = {};
+          for (const [k, v] of Object.entries(obj)) {
+            const newKey = prefix ? `${prefix}.${k}` : k;
+            if (v && typeof v === 'object' && !Array.isArray(v)) {
+              // 检查是否是值包装器（如 {t: 123} 或 {value: 123}）
+              const isWrapper = Object.keys(v).length === 1 && (v.t !== undefined || v.value !== undefined);
+              if (isWrapper) {
+                result[newKey] = v.t !== undefined ? v.t : v.value;
+              } else {
+                Object.assign(result, flattenObj(v, newKey));
               }
             } else {
-              flat[key] = value;
+              result[newKey] = v;
             }
           }
-          return flat;
-        });
+          return result;
+        };
+
+        const flattenedData = data.map(item => flattenObj(item));
 
         const allKeys = new Set();
         flattenedData.forEach(item => Object.keys(item).forEach(key => allKeys.add(key)));
@@ -1270,7 +1332,7 @@ class LixingerParser extends BaseParser {
           headers,
           rows,
           caption: `API数据: ${url.split('/').pop().split('?')[0]}`,
-          source: 'api'
+          source: 'api-data'
         });
       } catch (error) {
         // ignore
@@ -1390,34 +1452,58 @@ class LixingerParser extends BaseParser {
     try {
       // 指标名称映射
       const metricNames = {
-        'ps.gp_m': '毛利率',
-        'ps.op_m': '营业利润率',
-        'ps.np_m': '净利润率',
-        'ps.np_s_r': '销售净利率',
-        'ps.npadnrpatoshaopc_npatoshopc_r': '扣非净利润占比',
-        'ps.wdroe': '扣非加权ROE',
-        'm.wroe': '加权ROE',
-        'm.roe': 'ROE',
-        'm.roe_atoshaopc': 'ROE(归属母公司)',
-        'm.roe_adnrpatoshaopc': '扣非ROE',
-        'm.roa': 'ROA',
-        'm.roic': 'ROIC',
-        'm.roc': '投入资本回报率',
-        'm.ta_to': '总资产周转率',
-        'm.l': '权益乘数',
-        'm.np_s_r': '净利润率'
+        'ps.toi': '营业总收入', 'ps.toc': '营业总成本', 'ps.gp': '毛利润',
+        'ps.op': '营业利润', 'ps.np': '净利润', 'ps.npadnrpatoshaopc': '扣非净利润',
+        'ps.gp_m': '毛利率', 'ps.op_m': '营业利润率', 'ps.np_m': '净利润率',
+        'ps.np_s_r': '销售净利率', 'ps.npadnrpatoshaopc_npatoshopc_r': '扣非净利润占比',
+        'ps.wdroe': '扣非加权ROE', 'ps.ebit': 'EBIT', 'ps.ebitda': 'EBITDA',
+        'ps.da': '折旧摊销', 'ps.ie': '利息支出', 'ps.oe': '营业外收支',
+        'm.wroe': '加权ROE', 'm.roe': 'ROE', 'm.roe_atoshaopc': 'ROE(归属母公司)',
+        'm.roe_adnrpatoshaopc': '扣非ROE', 'm.roa': 'ROA', 'm.roic': 'ROIC',
+        'm.roc': '投入资本回报率', 'm.ta_to': '总资产周转率', 'm.l': '权益乘数',
+        'm.gp_m': '毛利率', 'm.np_s_r': '净利润率',
+        'bs.ta': '总资产', 'bs.tl': '总负债', 'bs.te': '股东权益',
+        'bs.ca': '流动资产', 'bs.cl': '流动负债', 'bs.nca': '非流动资产',
+        'bs.ncl': '非流动负债', 'bs.fa': '固定资产', 'bs.ia': '无形资产',
+        'bs.ar': '应收账款', 'bs.inv': '存货', 'bs.ltbor': '长期借款',
+        'cfs.ncf': '净现金流', 'cfs.ocf': '经营现金流', 'cfs.icf': '投资现金流',
+        'cfs.fcf': '自由现金流', 'cfs.ocf_ps': '每股经营现金流'
       };
 
-      // 收集所有指标键
-      const allKeys = new Set();
+      // 计算方式名称映射
+      const calcTypeNames = {
+        't': '累计',
+        't_y2y': '累计同比',
+        't_c2c': '累计环比',
+        'c': '单季',
+        'c_y2y': '单季同比',
+        'c_c2c': '单季环比',
+        'c_2y': '单季年比',
+        'ttm': 'TTM',
+        'ttm_y2y': 'TTM同比',
+        'ttm_c2c': 'TTM环比',
+        't_o': '累计(原值)',
+        'c_o': '单季(原值)',
+        'ttm_o': 'TTM(原值)',
+        't_r': '累计(比率)',
+        'c_r': '单季(比率)'
+      };
+
+      // 收集所有指标键和计算方式
+      const allMetrics = new Set();
+      const allCalcTypes = new Set();
       for (const d of data) {
-        if (d.q && d.q.ps) Object.keys(d.q.ps).forEach(k => allKeys.add('ps.' + k));
-        if (d.q && d.q.m) Object.keys(d.q.m).forEach(k => allKeys.add('m.' + k));
-        if (d.q && d.q.bs) Object.keys(d.q.bs).forEach(k => allKeys.add('bs.' + k));
-        if (d.q && d.q.cfs) Object.keys(d.q.cfs).forEach(k => allKeys.add('cfs.' + k));
+        for (const [cat, metrics] of Object.entries(d.q || {})) {
+          for (const [metric, values] of Object.entries(metrics)) {
+            allMetrics.add(`${cat}.${metric}`);
+            for (const calcType of Object.keys(values)) {
+              if (calcType !== '_id') allCalcTypes.add(calcType);
+            }
+          }
+        }
       }
 
-      if (allKeys.size === 0) return null;
+      if (allMetrics.size === 0) return null;
 
       // 提取日期（从最新到最旧，按季度去重，取前 20 个）
       const sortedData = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -1441,24 +1527,34 @@ class LixingerParser extends BaseParser {
         return `${year}Q${quarter}`;
       });
 
-      // 构建表格行：每行是一个指标，每列是一个日期
+      // 构建表格行：每行是一个指标+计算方式的组合
       const rows = [];
-      for (const key of Array.from(allKeys).sort()) {
+      const sortedMetrics = Array.from(allMetrics).sort();
+      const sortedCalcTypes = ['t', 't_y2y', 't_c2c', 'c', 'c_y2y', 'c_c2c', 'c_2y', 'ttm', 'ttm_y2y', 'ttm_c2c', 't_o', 'c_o', 'ttm_o', 't_r', 'c_r']
+        .filter(ct => allCalcTypes.has(ct));
+
+      for (const key of sortedMetrics) {
         const [category, metric] = key.split('.');
-        const name = metricNames[key] || key;
-        const values = uniqueData.map(d => {
-          const metricObj = d.q?.[category]?.[metric];
-          if (!metricObj) return '';
-          // 优先使用 .t，回退到 .t_o（priceMetricsInfluencesList 使用 .t_o）
-          let v = metricObj.t;
-          if (v === undefined || v === null) v = metricObj.t_o;
-          if (v === undefined || v === null) return '';
-          // 小于等于1的值视为百分比（如 0.8975 = 89.75%）
-          if (Math.abs(v) <= 1 && v !== 0) return (v * 100).toFixed(2) + '%';
-          // 大数值保留两位小数
-          return Number(v).toFixed(2);
-        });
-        rows.push([name, ...values]);
+        const baseName = metricNames[key] || key;
+
+        for (const calcType of sortedCalcTypes) {
+          const calcName = calcTypeNames[calcType] || calcType;
+          const values = uniqueData.map(d => {
+            const metricObj = d.q?.[category]?.[metric];
+            if (!metricObj) return '';
+            let v = metricObj[calcType];
+            if (v === undefined || v === null) return '';
+            // 小于等于1的值视为百分比（如 0.8975 = 89.75%）
+            if (Math.abs(v) <= 1 && v !== 0) return (v * 100).toFixed(2) + '%';
+            // 大数值保留两位小数
+            return Number(v).toFixed(2);
+          });
+
+          // 只添加有数据的行
+          if (values.some(v => v !== '')) {
+            rows.push([`${baseName}(${calcName})`, ...values]);
+          }
+        }
       }
 
       return {
@@ -1469,6 +1565,78 @@ class LixingerParser extends BaseParser {
         source: 'fs-metrics'
       };
     } catch (e) {
+      return null;
+    }
+  }
+
+  /**
+   * chart-maker/fs-metrics 页面：获取所有财务指标数据
+   * 通过直接调用 API 获取 comprehensive metrics，而不是仅依赖页面默认选中的指标
+   */
+  async fetchAllChartMakerMetrics(page, stockId) {
+    try {
+      const comprehensiveMetrics = [
+        // 利润表 (ps)
+        'ps.toi', 'ps.toc', 'ps.gp', 'ps.op', 'ps.np', 'ps.npadnrpatoshaopc',
+        'ps.gp_m', 'ps.op_m', 'ps.np_m', 'ps.np_s_r', 'ps.npadnrpatoshaopc_npatoshopc_r',
+        'ps.wdroe', 'ps.ebit', 'ps.ebitda', 'ps.da', 'ps.ie', 'ps.oe',
+        // 指标 (m)
+        'm.roe', 'm.roe_atoshaopc', 'm.roe_adnrpatoshaopc', 'm.wroe',
+        'm.roa', 'm.roic', 'm.roc', 'm.ta_to', 'm.l', 'm.gp_m', 'm.np_s_r',
+        // 资产负债表 (bs)
+        'bs.ta', 'bs.tl', 'bs.te', 'bs.ca', 'bs.cl', 'bs.nca', 'bs.ncl',
+        'bs.fa', 'bs.ia', 'bs.ar', 'bs.inv', 'bs.ltbor',
+        // 现金流量表 (cfs)
+        'cfs.ncf', 'cfs.ocf', 'cfs.icf', 'cfs.fcf', 'cfs.ocf_ps'
+      ];
+
+      console.log(`  [Lixinger] 获取 chart-maker 全部指标数据...`);
+
+      const result = await page.evaluate(async ({ stockId, metrics }) => {
+        try {
+          const endDate = new Date().toISOString().split('T')[0];
+          const startDate = `${new Date().getFullYear() - 30}-01-01`;
+          const res = await fetch('https://www.lixinger.com/api/company/fs-metrics/list-info', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              stockIds: [parseInt(stockId)],
+              startDate: `${startDate}T00:00:00.000Z`,
+              endDate: `${endDate}T00:00:00.000Z`,
+              ownerTypes: ['consolidated'],
+              granularities: ['q'],
+              metricsNames: metrics,
+              expressionCalculateTypes: ['t', 't_y2y', 't_c2c', 'c', 'c_y2y', 'c_c2c', 'c_2y', 'ttm', 'ttm_y2y', 'ttm_c2c', 't_o', 'c_o', 'ttm_o'],
+              withLatestData: true
+            })
+          });
+          return await res.json();
+        } catch (e) {
+          return { error: e.message };
+        }
+      }, { stockId: String(stockId), metrics: comprehensiveMetrics });
+
+      if (result.error) {
+        console.log(`  [Lixinger] chart-maker API 错误: ${result.error}`);
+        return null;
+      }
+
+      if (result.fsMetricsList && result.fsMetricsList.length > 0) {
+        const metricCount = new Set();
+        for (const item of result.fsMetricsList) {
+          for (const [cat, metrics] of Object.entries(item.q || {})) {
+            for (const m of Object.keys(metrics)) {
+              metricCount.add(`${cat}.${m}`);
+            }
+          }
+        }
+        console.log(`  [Lixinger] chart-maker 获取 ${result.fsMetricsList.length} 条数据，${metricCount.size} 个指标`);
+        return result.fsMetricsList;
+      }
+
+      return null;
+    } catch (e) {
+      console.log(`  [Lixinger] chart-maker 获取失败: ${e.message}`);
       return null;
     }
   }
@@ -1524,6 +1692,105 @@ class LixingerParser extends BaseParser {
         rows,
         caption: '股权质押历史数据',
         source: 'pledge-api'
+      };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /**
+   * 判断数据是否为简单时间序列（如波动率、股价等 {date, value} 格式）
+   */
+  isSimpleTimeSeries(data) {
+    if (!Array.isArray(data) || data.length === 0) return false;
+    const first = data[0];
+    if (!first.date) return false;
+    // 检查是否只包含 date + 简单数值字段（不超过 5 个字段）
+    const keys = Object.keys(first);
+    if (keys.length > 5) return false;
+    // 至少有一个数值字段
+    const hasNumericField = keys.some(k =>
+      k !== 'date' && k !== 'stockId' && k !== '_id' &&
+      (typeof first[k] === 'number' || typeof first[k] === 'string')
+    );
+    return hasNumericField;
+  }
+
+  /**
+   * 将简单时间序列数据转换为人类可读的表格
+   * 按月采样，避免日报表过于庞大
+   */
+  convertSimpleTimeSeriesToTable(data, url) {
+    try {
+      const first = data[0];
+      const keys = Object.keys(first).filter(k =>
+        k !== 'date' && k !== 'stockId' && k !== '_id'
+      );
+      if (keys.length === 0) return null;
+
+      // 指标名称映射
+      const metricNames = {
+        value: '数值',
+        lxr_fc_rights: '理杏仁前复权',
+        sp: '股价',
+        d_pe_ttm: 'PE-TTM',
+        pb_wo_gw: 'PB(不含商誉)',
+        ps_ttm: 'PS-TTM',
+        dyr: '股息率',
+        volatility: '波动率',
+        turnover: '换手率',
+        amplitude: '振幅'
+      };
+
+      // 按月采样（取每月最后一个数据点）
+      const monthlyData = [];
+      const seenMonths = new Set();
+      const sortedData = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      for (const d of sortedData) {
+        const date = new Date(d.date);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        if (!seenMonths.has(monthKey)) {
+          seenMonths.add(monthKey);
+          monthlyData.push(d);
+        }
+        if (monthlyData.length >= 60) break; // 最多 60 个月
+      }
+
+      monthlyData.reverse(); // 从旧到新
+
+      const dates = monthlyData.map(d => {
+        const date = new Date(d.date);
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      });
+
+      const rows = [];
+      for (const key of keys) {
+        const name = metricNames[key] || key;
+        const values = monthlyData.map(d => {
+          const v = d[key];
+          if (v === undefined || v === null) return '';
+          if (typeof v === 'number') return v.toFixed(2);
+          return String(v);
+        });
+        rows.push([name, ...values]);
+      }
+
+      // 从 URL 中提取页面类型作为标题
+      const urlPath = url.split('/').pop().split('?')[0];
+      const captionMap = {
+        'list': '时间序列数据',
+        'price-metrics': '价格指标',
+        'get-price-metrics-chart-info': '估值指标'
+      };
+      const caption = captionMap[urlPath] || '时间序列数据';
+
+      return {
+        index: 0,
+        headers: ['指标', ...dates],
+        rows,
+        caption,
+        source: 'api-data'
       };
     } catch (e) {
       return null;
@@ -1750,16 +2017,18 @@ class LixingerParser extends BaseParser {
       // 保留经过人工转换的可读表格（fs-metrics、pledge-api）
       if (t.source === 'api') return false;
       // 4b. 排除表头包含典型 API 内部字段的表格
-      const apiFieldPatterns = [
-        /^(stockId|date|ownerType|dataType|sp|candlestick\.|stock\.|q\.bs\.|q\.is\.|q\.cf\.)/,
-        /^[a-f0-9]{24}$/,  // MongoDB ObjectId
-        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/  // ISO timestamp
-      ];
-      const hasApiFieldHeader = t.headers.some(h => apiFieldPatterns.some(p => p.test(String(h))));
-      if (hasApiFieldHeader) return false;
+      // 但保留 api-data 来源的已转换表格（如时间序列数据）
+      if (t.source !== 'api-data') {
+        const apiFieldPatterns = [
+          /^(stockId|ownerType|dataType|sp|candlestick\.|stock\.|q\.bs\.|q\.is\.|q\.cf\.)/,
+          /^[a-f0-9]{24}$/,  // MongoDB ObjectId
+        ];
+        const hasApiFieldHeader = t.headers.some(h => apiFieldPatterns.some(p => p.test(String(h))));
+        if (hasApiFieldHeader) return false;
+      }
       // 4c. 排除整表内容几乎全是英文代码/ID/布尔值的表格
-      // 但保留已人工转换的可读表格（fs-metrics、pledge-api、price-metrics）
-      if (t.source !== 'fs-metrics' && t.source !== 'pledge-api' && t.source !== 'price-metrics') {
+      // 但保留已人工转换的可读表格（fs-metrics、pledge-api、price-metrics、api-data）
+      if (t.source !== 'fs-metrics' && t.source !== 'pledge-api' && t.source !== 'price-metrics' && t.source !== 'api-data') {
         const allText = [...t.headers, ...t.rows.flat()].join(' ');
         const isMostlyCodes = allText.split(/\s+/).filter(w => w.length > 0).length > 0 &&
           allText.split(/\s+/).filter(w => /^[a-zA-Z_][a-zA-Z0-9_.]*$/.test(w) || w === 'true' || w === 'false' || /^[a-f0-9]{24}$/.test(w)).length /

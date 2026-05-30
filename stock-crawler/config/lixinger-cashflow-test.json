@@ -1,0 +1,34 @@
+{
+  "name": "lixinger-cashflow-test",
+  "seedUrls": [
+    "https://www.lixinger.com/analytics/company/detail/sh/600519/600519/fundamental/cashflow"
+  ],
+  "urlRules": {
+    "include": [
+      ".*lixinger\\.com/analytics/company/detail/sh/600519/600519/fundamental/cashflow.*"
+    ],
+    "exclude": [
+      ".*login.*",
+      ".*logout.*",
+      ".*register.*"
+    ]
+  },
+  "login": {
+    "required": true,
+    "username": "13311390323",
+    "password": "3228552",
+    "loginUrl": "https://www.lixinger.com/open/api/my-apis"
+  },
+  "crawler": {
+    "headless": true,
+    "timeout": 30000,
+    "waitBetweenRequests": 1000,
+    "maxRetries": 3,
+    "batchSize": 100,
+    "userDataDir": "./chrome_user_data"
+  },
+  "output": {
+    "directory": "./output",
+    "format": "markdown"
+  }
+}

@@ -317,16 +317,42 @@ class CrawlerMain {
       if (!needsLogin) {
         // Try to find and click login link
         this.logger.info('Not on login page, looking for login link...');
-        const loginLink = page.locator('text=登录').first();
-        if (await loginLink.count() > 0) {
+        // 使用更精确的选择器，避免匹配到示例图片中的文字
+        const loginLinkSelectors = [
+          'a:has-text("登录/注册")',
+          'a:has-text("登录")',
+          'button:has-text("登录")',
+          '[class*="login"]:has-text("登录")',
+          '[class*="signin"]:has-text("登录")',
+          '#lxr-account-sign-in-and-up:has-text("登录")'
+        ];
+        let loginLink = null;
+        for (const sel of loginLinkSelectors) {
+          const link = page.locator(sel).first();
+          if (await link.count() > 0 && await link.isVisible()) {
+            loginLink = link;
+            break;
+          }
+        }
+        if (loginLink) {
           this.logger.info('Found login link, clicking...');
           await loginLink.click();
-          await page.waitForTimeout(2000);
+          // 等待登录模态框出现（理杏仁使用 Vue 动态渲染）
+          await page.waitForTimeout(3000);
+          try {
+            await page.waitForSelector('input[type="password"]', { timeout: 5000, state: 'visible' });
+            this.logger.info('Login modal appeared with password field');
+          } catch (e) {
+            this.logger.warn('Password field not visible after clicking login link');
+          }
         }
       }
-      
+
       // Now check if we need to login
-      const hasPasswordField = await page.locator('input[type="password"]').count() > 0;
+      const passwordInputs = await page.locator('input[type="password"]').all();
+      const hasPasswordField = passwordInputs.some(async input => {
+        try { return await input.isVisible(); } catch (e) { return false; }
+      });
       
       if (hasPasswordField) {
         this.logger.info('Login form detected, attempting to log in...');
@@ -396,15 +422,16 @@ class CrawlerMain {
       }
       
       // Look for login links using locator API
+      // 避免使用过于宽泛的 text=登录，防止匹配到示例图片中的文字
       const loginLinkSelectors = [
-        'text=登录',
-        'text=登錄',
+        'a:has-text("登录")',
+        'button:has-text("登录")',
+        'a:has-text("登錄")',
+        'button:has-text("登錄")',
         'text=Login',
         'text=Sign in',
         'a[href*="login"]',
-        'a[href*="signin"]',
-        'button:has-text("登录")',
-        'button:has-text("登錄")'
+        'a[href*="signin"]'
       ];
       
       for (const selector of loginLinkSelectors) {

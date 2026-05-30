@@ -1,0 +1,32 @@
+{
+  "name": "lixinger-test-pages",
+  "seedUrls": [
+    "https://www.lixinger.com/analytics/company/detail/sh/600519/600519/volatility",
+    "https://www.lixinger.com/analytics/company/detail/sh/600519/600519/fundamental/surplus-reinvestment-rate",
+    "https://www.lixinger.com/analytics/company/detail/sh/600519/600519/senior-executive/shares-change",
+    "https://www.lixinger.com/analytics/company/detail/sh/600519/600519/operation-revenue-constitution",
+    "https://www.lixinger.com/analytics/company/detail/sh/600519/600519/dividend-financing"
+  ],
+  "urlRules": {
+    "include": [".*lixinger\\.com/analytics/company/detail/sh/600519/600519/.*"],
+    "exclude": [".*login.*", ".*logout.*", ".*register.*"]
+  },
+  "login": {
+    "required": true,
+    "username": "13311390323",
+    "password": "3228552",
+    "loginUrl": "https://www.lixinger.com/open/api/my-apis"
+  },
+  "crawler": {
+    "headless": true,
+    "timeout": 30000,
+    "waitBetweenRequests": 1000,
+    "maxRetries": 3,
+    "batchSize": 100,
+    "userDataDir": "./chrome_user_data"
+  },
+  "output": {
+    "directory": "./output",
+    "format": "markdown"
+  }
+}
