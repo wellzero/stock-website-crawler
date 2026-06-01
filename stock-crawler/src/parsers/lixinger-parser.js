@@ -66,47 +66,7 @@ class LixingerParser extends BaseParser {
     await this.waitForLixingerContent(page);
     const linkFinder = new LinkFinder();
     const links = await linkFinder.extractLinks(page, urlRules, { fetchMethod: 'playwright' });
-
-    // 为财务页面添加三种粒度（年报/季报/半年报），/m（重大事项）也有 yearly/quarter
-    const financialPaths = ['/bs', '/ps', '/cfs', '/is', '/m'];
-    const extraLinks = [];
-    const granularities = [
-      { key: 'y', suffix: 'yearly' },
-      { key: 'q', suffix: 'quarter' }
-    ];
-
-    for (const url of links) {
-      if (!financialPaths.some(p => url.includes(p))) continue;
-      try {
-        const u = new URL(url);
-        const currentGranularity = u.searchParams.get('granularity');
-        for (const g of granularities) {
-          // 如果原始 URL 没有 granularity，跳过 quarter（原始 URL 会默认处理为季报）
-          if (!currentGranularity && g.key === 'q') continue;
-          if (currentGranularity === g.key) continue;
-          const newUrl = new URL(url);
-          newUrl.searchParams.set('granularity', g.key);
-          // 保留其他必要参数
-          if (!newUrl.searchParams.has('fs-owner-type')) {
-            newUrl.searchParams.set('fs-owner-type', 'consolidated');
-          }
-          if (!newUrl.searchParams.has('data-display-type')) {
-            newUrl.searchParams.set('data-display-type', 'number');
-          }
-          if (!newUrl.searchParams.has('data-report-type')) {
-            newUrl.searchParams.set('data-report-type', 'all');
-          }
-          if (!newUrl.searchParams.has('data-metrics-types')) {
-            newUrl.searchParams.set('data-metrics-types', 't,c,c2y,yoy,coc');
-          }
-          extraLinks.push(newUrl.toString());
-        }
-      } catch (e) {
-        // ignore invalid URLs
-      }
-    }
-
-    return [...links, ...extraLinks];
+    return links;
   }
 
   /**
@@ -207,265 +167,7 @@ class LixingerParser extends BaseParser {
       // 选择最大可用时间范围（2年/3年/5年/10年/20年/30年）以获取全部历史数据
       await this.selectMaxTimeRange(page);
 
-      // 检查是否是分页页面（bs/ps/cfs/is/m）
-      const urlObj = new URL(url);
-      const path = urlObj.pathname;
-      const paginatedPaths = ['/bs', '/ps', '/cfs', '/is', '/m'];
-      const isPaginatedPage = paginatedPaths.some(p => path.endsWith(p));
-      const isFinancialStatement = ['/bs', '/ps', '/cfs', '/is'].some(p => path.endsWith(p));
-
-      // 分页页面：每页数据存为独立文件（如 资产负债表_quarter_0.md, _1.md...）
-      if (isPaginatedPage && options.pagesDir) {
-        // /m 页面和财务报表页面都需要同时下载季报(q)和年报(y)
-        const granularities = (path.endsWith('/m') || isFinancialStatement) ? ['q', 'y'] : [null];
-        const granularityNames = { q: 'quarter', y: 'yearly' };
-        let anyPagesSaved = false;
-        const fs = await import('fs');
-
-        for (const gran of granularities) {
-          const pageUrlWithGran = gran !== null
-            ? `${url}${url.includes('?') ? '&' : '?'}granularity=${gran}`
-            : url;
-          const paginatedPages = path.endsWith('/m')
-            ? await this.fetchPaginatedUrlsByUIClick(page, pageUrlWithGran)
-            : await this.fetchPaginatedUrls(page, pageUrlWithGran, { separatePages: true });
-          if (paginatedPages.length === 0) continue;
-
-          anyPagesSaved = true;
-          const baseFilename = this.buildSuggestedFilename(pageUrlWithGran);
-          // 财务报表页面的 buildSuggestedFilename 已包含粒度后缀（_quarter/_yearly），/m 页面需要手动添加
-          const granSuffix = (gran !== null && path.endsWith('/m')) ? `_${granularityNames[gran]}` : '';
-
-          for (const { pageIndex, tables } of paginatedPages) {
-            // 过滤只有 1 列的表格（div-grid 误提取的指标列表）
-            let validTables = tables.filter(t => t.headers && t.headers.length > 1);
-            if (validTables.length === 0) continue;
-
-            // 财务报表页面：过滤掉非财务报表数据（员工情况、股本估值等不属于资产负债表）
-            if (isFinancialStatement) {
-              validTables = validTables.map(table => {
-                const reportRows = table.rows.filter(row => {
-                  const label = row[0] || '';
-                  // 跳过章节标题行
-                  if (label.startsWith('四、员工情况') || label.startsWith('五、股本、股东以及估值')) return false;
-                  // 跳过员工相关行
-                  if (/^(员工人数|博士人数|硕士人数|学士人数|大专人数|高中及以下人数|生产人员人数|销售人员人数|技术人员人数|财务人员人数|行政人员人数|其他人员人数)$/.test(label)) return false;
-                  // 跳过股本估值相关行
-                  if (/^(市值|总股数|流通股数|总股东人数|A股股东人数|第一大股东持仓|前十大股东持仓|前十大流通股东持仓|进公募基金前十大持仓|公募基金持仓|公募基金\+自由流通股东持仓|PE-TTM|PE-TTM\(扣非\)|PB|PB\(不含商誉\)|PS-TTM|PCF-TTM|股息率)$/.test(label)) return false;
-                  return true;
-                });
-                return { ...table, rows: reportRows };
-              }).filter(t => t.rows.length > 0);
-            }
-
-            if (validTables.length === 0) continue;
-
-            const sections = [];
-            const pageUrl = `${pageUrlWithGran}${pageUrlWithGran.includes('?') ? '&' : '?'}page-index=${pageIndex}`;
-            sections.push(`## 源URL\n\n${pageUrl}`);
-            for (const table of validTables) {
-              sections.push('');
-              sections.push(`| ${table.headers.join(' | ')} |`);
-              sections.push(`| ${table.headers.map(() => '---').join(' | ')} |`);
-              for (const row of table.rows) {
-                sections.push(`| ${row.join(' | ')} |`);
-              }
-            }
-            const markdown = sections.join('\n');
-            const filename = `${baseFilename}${granSuffix}_${pageIndex}.md`;
-            const filepath = `${options.pagesDir}/${filename}`;
-            if (fs.existsSync(filepath)) {
-              const crypto = await import('crypto');
-              const urlHash = crypto.createHash('md5').update(pageUrl).digest('hex').substring(0, 8);
-              const uniqueFilename = `${baseFilename}${granSuffix}_${pageIndex}_${urlHash}.md`;
-              fs.writeFileSync(`${options.pagesDir}/${uniqueFilename}`, markdown, 'utf-8');
-              console.log(`  [Lixinger] 已保存分页文件: ${uniqueFilename}`);
-            } else {
-              fs.writeFileSync(filepath, markdown, 'utf-8');
-              console.log(`  [Lixinger] 已保存分页文件: ${filename}`);
-            }
-          }
-        }
-
-        if (anyPagesSaved) {
-          context.data.skipDefaultMarkdownOutput = true;
-          context.data.suggestedFilename = this.buildSuggestedFilename(url);
-          return this.formatResult(context.data, url);
-        }
-      }
-
-      // ── 通用页面：检测粒度选项和 UI 分页，保存独立文件 ──
-      // 适用于非特殊页面（非 bs/ps/cfs/is/m）且有 pagesDir 配置时
-      if (!isPaginatedPage && options.pagesDir) {
-        const granularityOptions = await this.detectGranularityOptions(page);
-        const hasPagination = await this.hasUIPagination(page);
-
-        if (granularityOptions.length > 0 || hasPagination) {
-          // 确定要处理的粒度：优先处理 "年" 和 "季度"
-          const desiredGranularities = granularityOptions.length > 0
-            ? ['年', '季度'].filter(g => granularityOptions.includes(g) || granularityOptions.includes('年报数值'))
-            : [null];
-          // 如果只有 "年报数值" 没有 "年"，把 "年报数值" 当作 yearly
-          if (granularityOptions.includes('年报数值') && !granularityOptions.includes('年')) {
-            desiredGranularities.push('年报数值');
-          }
-
-          const granularityNames = { '年': 'yearly', '季度': 'quarter', '年报数值': 'yearly' };
-          let anyPagesSaved = false;
-          const fs = await import('fs');
-
-          for (const gran of desiredGranularities) {
-            // 选择粒度选项（如果有）
-            if (gran !== null) {
-              const selected = await this.selectGranularityOption(page, gran);
-              if (!selected) continue;
-            }
-
-            // 收集分页数据（UI 点击或仅当前页）
-            const paginatedPages = hasPagination
-              ? await this.fetchAllUIPages(page)
-              : [{ pageIndex: 0, tables: await page.evaluate(() => {
-                  const results = [];
-                  document.querySelectorAll('table').forEach((table, idx) => {
-                    const headers = [];
-                    table.querySelectorAll('thead th, thead td').forEach(c => headers.push(c.textContent?.trim() || ''));
-                    if (headers.length === 0) {
-                      const firstRow = table.querySelector('tr');
-                      if (firstRow) firstRow.querySelectorAll('th, td').forEach(c => headers.push(c.textContent?.trim() || ''));
-                    }
-                    const rows = [];
-                    const bodyRows = table.querySelectorAll('tbody tr');
-                    const toProcess = bodyRows.length > 0 ? bodyRows : table.querySelectorAll('tr');
-                    toProcess.forEach((row, ri) => {
-                      if (ri === 0 && headers.length > 0 && bodyRows.length === 0) return;
-                      const cells = Array.from(row.querySelectorAll('td, th'));
-                      if (cells.length === 0) return;
-                      const rd = cells.map(c => c.textContent?.trim() || '');
-                      if (rd.every(c => c === '')) return;
-                      rows.push(rd);
-                    });
-                    if (headers.length > 0 || rows.length > 0) results.push({ index: idx, headers, rows, caption: '' });
-                  });
-                  return results;
-                }) }];
-
-            if (paginatedPages.length === 0) continue;
-
-            // 过滤表格：去掉空表和公司概况表
-            const validPages = paginatedPages.map(p => ({
-              pageIndex: p.pageIndex,
-              tables: p.tables.filter(t => t.headers && t.headers.length > 1 && !this.isCompanyOverviewTable(t))
-            })).filter(p => p.tables.length > 0);
-
-            // 转换 API 数据为表格（fundamental 等页面的图表数据来自 API）
-            let apiTables = [];
-            if (this.apiData.length > 0) {
-              console.log(`  [Lixinger] 通用页面转换 API 数据: ${this.apiData.length} 条`);
-              apiTables = await this.convertAPIDataToTables(this.apiData);
-              // 去重：避免同一粒度下重复添加相同 API 数据
-              this.apiData = [];
-            }
-
-            if (validPages.length === 0 && apiTables.length === 0) continue;
-
-            const baseFilename = this.buildSuggestedFilename(url);
-            const granSuffix = gran !== null ? `_${granularityNames[gran]}` : '';
-
-            for (const { pageIndex, tables } of validPages) {
-              const allTables = [...tables, ...apiTables];
-              const sections = [];
-              sections.push(`## 源URL\n\n${url}`);
-              for (const table of allTables) {
-                sections.push('');
-                sections.push(`| ${table.headers.join(' | ')} |`);
-                sections.push(`| ${table.headers.map(() => '---').join(' | ')} |`);
-                for (const row of table.rows) {
-                  sections.push(`| ${row.join(' | ')} |`);
-                }
-              }
-              const markdown = sections.join('\n');
-              const filename = `${baseFilename}${granSuffix}_${pageIndex}.md`;
-              const filepath = `${options.pagesDir}/${filename}`;
-              if (fs.existsSync(filepath)) {
-                const crypto = await import('crypto');
-                const urlHash = crypto.createHash('md5').update(url).digest('hex').substring(0, 8);
-                const uniqueFilename = `${baseFilename}${granSuffix}_${pageIndex}_${urlHash}.md`;
-                fs.writeFileSync(`${options.pagesDir}/${uniqueFilename}`, markdown, 'utf-8');
-                console.log(`  [Lixinger] 已保存通用分页文件: ${uniqueFilename}`);
-              } else {
-                fs.writeFileSync(filepath, markdown, 'utf-8');
-                console.log(`  [Lixinger] 已保存通用分页文件: ${filename}`);
-              }
-              anyPagesSaved = true;
-            }
-
-            // 如果没有分页页面但有 API 表格，保存为单页
-            if (validPages.length === 0 && apiTables.length > 0) {
-              const sections = [];
-              sections.push(`## 源URL\n\n${url}`);
-              for (const table of apiTables) {
-                sections.push('');
-                sections.push(`| ${table.headers.join(' | ')} |`);
-                sections.push(`| ${table.headers.map(() => '---').join(' | ')} |`);
-                for (const row of table.rows) {
-                  sections.push(`| ${row.join(' | ')} |`);
-                }
-              }
-              const markdown = sections.join('\n');
-              const filename = `${baseFilename}${granSuffix}_0.md`;
-              const filepath = `${options.pagesDir}/${filename}`;
-              if (fs.existsSync(filepath)) {
-                const crypto = await import('crypto');
-                const urlHash = crypto.createHash('md5').update(url).digest('hex').substring(0, 8);
-                const uniqueFilename = `${baseFilename}${granSuffix}_0_${urlHash}.md`;
-                fs.writeFileSync(`${options.pagesDir}/${uniqueFilename}`, markdown, 'utf-8');
-                console.log(`  [Lixinger] 已保存通用分页文件: ${uniqueFilename}`);
-              } else {
-                fs.writeFileSync(filepath, markdown, 'utf-8');
-                console.log(`  [Lixinger] 已保存通用分页文件: ${filename}`);
-              }
-              anyPagesSaved = true;
-            }
-
-            // 如果有粒度选项，导航回原 URL 以便下一个粒度从第一页开始
-            if (gran !== null && desiredGranularities.indexOf(gran) < desiredGranularities.length - 1) {
-              await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-              await this.waitForLixingerContent(page);
-              await page.waitForTimeout(1500);
-            }
-          }
-
-          if (anyPagesSaved) {
-            context.data.skipDefaultMarkdownOutput = true;
-            context.data.suggestedFilename = baseFilename;
-            return this.formatResult(context.data, url);
-          }
-        }
-      }
-
-      // 先通过 URL page-index 参数遍历所有分页（避免 UI 点击遗漏）
-      const urlPaginatedData = await this.fetchPaginatedUrls(page, url);
-
-      // 将 URL 分页数据写入浏览器全局变量
-      const hasUrlPaginatedData = urlPaginatedData.length > 0;
-      const hasWideColumns = urlPaginatedData.some(t => t.headers.length > 20);
-      if (hasUrlPaginatedData) {
-        await page.evaluate((data) => {
-          window.__lixingerPaginatedData = data;
-        }, urlPaginatedData);
-      }
-
-      // 如果 URL 分页已收集到宽列数据（多页合并），跳过 UI 点击避免覆盖
-      // 同时跳过 fundamental 分析页面（/fundamental/profit, /fundamental/growth 等）
-      // 这些页面的数据以图表形式展示，分页按钮通常属于无关组件（如股票对比列表）
-      const isFundamentalAnalysisPage = /\/fundamental\/(profit|growth|cash-flow|operating-ability|cost|per-capita|asset|debt|safety)/.test(url);
-      if (hasWideColumns) {
-        console.log('  [Lixinger] URL 分页已收集完整数据，跳过 UI 点击');
-      } else if (isFundamentalAnalysisPage) {
-        console.log('  [Lixinger] fundamental 分析页面跳过 UI 分页点击');
-      } else {
-        await this.clickPaginationAndCollectData(page);
-      }
+      await this.clickPaginationAndCollectData(page);
 
       // chart-maker/fs-metrics 页面：通过 API 下载所有指标的所有计算方式数据
       if (url.includes('chart-maker/fs-metrics')) {
@@ -490,7 +192,7 @@ class LixingerParser extends BaseParser {
       const extractedData = await this.extractLixingerData(page, url);
       Object.assign(context.data, extractedData);
 
-      // 等待异步 API 响应处理完成（某些页面如 fundamental/valuation 的 API 在页面加载后才触发）
+      // 等待异步 API 响应处理完成
       if (this.apiData.length === 0) {
         console.log('  [Lixinger] 等待 API 数据响应...');
         await page.waitForTimeout(3000);
@@ -677,205 +379,6 @@ class LixingerParser extends BaseParser {
   }
 
   /**
-   * 检测页面是否有 UI 分页（"下一页"按钮）
-   */
-  async hasUIPagination(page) {
-    try {
-      const nextBtn = page.locator('text=下一页').first();
-      const count = await nextBtn.count();
-      if (count === 0) return false;
-      const isDisabled = await nextBtn.evaluate(el => {
-        return el.disabled || el.classList.contains('disabled') ||
-               el.classList.contains('el-pagination--disabled') ||
-               el.getAttribute('aria-disabled') === 'true';
-      }).catch(() => false);
-      return !isDisabled;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  /**
-   * 检测页面上的粒度选项（年/半年/季度）
-   * 返回可用的选项文本数组，如 ['年', '半年', '季度']
-   */
-  async detectGranularityOptions(page) {
-    try {
-      const buttons = await page.evaluate(() => {
-        return Array.from(document.querySelectorAll('.btn-outline-classic, [class*="granularity"], [class*="period"]')).map(el => ({
-          text: el.textContent?.trim() || '',
-          isActive: el.classList.contains('active') || el.classList.contains('is-active')
-        }));
-      });
-      // 粒度选项文本：年、半年、季度、年报数值（排除时间范围按钮如 "10 年"）
-      const granularityTexts = ['年', '半年', '季度', '年报数值'];
-      const found = buttons
-        .filter(b => granularityTexts.includes(b.text))
-        .map(b => b.text);
-      return [...new Set(found)];
-    } catch (e) {
-      return [];
-    }
-  }
-
-  /**
-   * 选择页面上的粒度选项
-   * @param {string} text - 选项文本，如 '年', '季度'
-   */
-  async selectGranularityOption(page, text) {
-    try {
-      const buttons = await page.locator('.btn-outline-classic, [class*="granularity"], [class*="period"]').all();
-      for (const btn of buttons) {
-        const btnText = await btn.textContent().catch(() => '');
-        if (btnText.trim() === text) {
-          const isActive = await btn.evaluate(el =>
-            el.classList.contains('active') || el.classList.contains('is-active')
-          ).catch(() => false);
-          if (isActive) {
-            console.log(`  [Lixinger] 粒度选项 "${text}" 已选中`);
-            return true;
-          }
-          console.log(`  [Lixinger] 选择粒度选项: ${text}`);
-          await btn.click();
-          await page.waitForTimeout(2500);
-          await this.waitForLixingerContent(page);
-          return true;
-        }
-      }
-      return false;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  /**
-   * 通用 UI 分页数据收集
-   * 适用于任何有"下一页"按钮的页面，返回 { pageIndex, tables }[]
-   */
-  async fetchAllUIPages(page) {
-    const pagesData = [];
-    try {
-      let pageIndex = 0;
-      const maxPages = 100;
-
-      while (pageIndex < maxPages) {
-        // 提取当前页表格数据
-        const pageTables = await page.evaluate(() => {
-          const results = [];
-          const tables = document.querySelectorAll('table');
-          tables.forEach((table, idx) => {
-            const headers = [];
-            const headerCells = table.querySelectorAll('thead th, thead td');
-            headerCells.forEach(cell => headers.push(cell.textContent?.trim() || ''));
-            if (headers.length === 0) {
-              const firstRow = table.querySelector('tr');
-              if (firstRow) {
-                firstRow.querySelectorAll('th, td').forEach(cell => headers.push(cell.textContent?.trim() || ''));
-              }
-            }
-
-            const rows = [];
-            const bodyRows = table.querySelectorAll('tbody tr');
-            const rowsToProcess = bodyRows.length > 0 ? bodyRows : table.querySelectorAll('tr');
-            rowsToProcess.forEach((row, rowIndex) => {
-              if (rowIndex === 0 && headers.length > 0 && bodyRows.length === 0) return;
-              const cells = Array.from(row.querySelectorAll('td, th'));
-              if (cells.length === 0) return;
-              const rowData = cells.map(cell => cell.textContent?.trim() || '');
-              if (rowData.every(c => c === '')) return;
-              rows.push(rowData);
-            });
-
-            if (headers.length > 0 || rows.length > 0) {
-              results.push({ index: idx, headers, rows, caption: '' });
-            }
-          });
-          return results;
-        });
-
-        // 过滤表格
-        const filteredTables = [];
-        for (const pt of pageTables) {
-          if (pt.headers[0]?.includes('PE-TTM') || pt.headers[0]?.includes('贵州茅台 沪股通')) continue;
-          if (pt.headers.length <= 1 && pt.rows.length === 0) continue;
-          const filteredRows = pt.rows.filter(r => !this.isSubHeaderRow(r));
-          if (pt.headers.length > 0 || filteredRows.length > 0) {
-            filteredTables.push({
-              index: pt.index,
-              headers: [...pt.headers],
-              rows: filteredRows.map(r => [...r]),
-              caption: ''
-            });
-          }
-        }
-
-        // 检测是否有新数据：比较当前 page 和上一个 page 的表头
-        let hasNewData = false;
-        if (filteredTables.length > 0) {
-          if (pagesData.length === 0) {
-            hasNewData = true;
-          } else {
-            const lastPage = pagesData[pagesData.length - 1];
-            for (const table of filteredTables) {
-              const lastTable = lastPage.tables.find(t => t.index === table.index);
-              if (!lastTable) {
-                hasNewData = true;
-                break;
-              }
-              const currentDataHeaders = table.headers.slice(1).join(',');
-              const lastDataHeaders = lastTable.headers.slice(1).join(',');
-              if (currentDataHeaders !== lastDataHeaders) {
-                hasNewData = true;
-                break;
-              }
-            }
-          }
-        }
-
-        if (!hasNewData) {
-          console.log(`  [Lixinger] 通用分页 page=${pageIndex} 无新数据，停止`);
-          break;
-        }
-
-        pagesData.push({ pageIndex, tables: filteredTables });
-        console.log(`  [Lixinger] 通用分页 page=${pageIndex}, ${filteredTables.length} 个表格`);
-
-        // 查找并点击"下一页"按钮
-        const nextBtn = page.locator('text=下一页').first();
-        const count = await nextBtn.count();
-        if (count === 0) {
-          console.log(`  [Lixinger] 通用分页 未找到下一页按钮，停止`);
-          break;
-        }
-
-        const isDisabled = await nextBtn.evaluate(el => {
-          return el.disabled || el.classList.contains('disabled') ||
-                 el.classList.contains('el-pagination--disabled') ||
-                 el.getAttribute('aria-disabled') === 'true';
-        }).catch(() => false);
-
-        if (isDisabled) {
-          console.log(`  [Lixinger] 通用分页 下一页已禁用，停止`);
-          break;
-        }
-
-        await nextBtn.click();
-        console.log(`  [Lixinger] 通用分页 点击下一页...`);
-        await page.waitForTimeout(2000);
-        await this.waitForLixingerContent(page);
-
-        pageIndex++;
-      }
-
-      console.log(`  [Lixinger] 通用分页完成，共 ${pagesData.length} 页`);
-    } catch (error) {
-      console.log(`  [Lixinger] 通用分页结束: ${error.message}`);
-    }
-
-    return pagesData;
-  }
-
-  /**
    * 点击分页按钮并收集所有页面数据
    * 理杏仁财务表格通常有分页，需要点击"下一页"加载全部数据
    */
@@ -1006,417 +509,6 @@ class LixingerParser extends BaseParser {
     } catch (error) {
       console.log(`  [Lixinger] 分页点击结束: ${error.message}`);
     }
-  }
-
-  /**
-   * 通过 URL page-index 参数遍历所有分页数据
-   * 理杏仁某些页面通过 page-index=0,1,2,3... 分页，需要直接构造 URL 访问
-   * 返回在 Node.js 中累积的表格数据数组
-   */
-  async fetchPaginatedUrls(page, baseUrl, options = {}) {
-    const { separatePages = false } = options;
-    const accumulatedData = []; // 在 Node.js 中累积，避免 page.goto 刷新丢失
-    const pagesData = []; // 用于 separatePages 模式：每个 page-index 独立保存
-
-    try {
-      const urlObj = new URL(baseUrl);
-      const path = urlObj.pathname;
-
-      // 处理财务数据页面（bs/ps/cfs/is）和重大事项页面（/m），排除 /fundamental/* 分析页面
-      const paginatedPaths = ['/bs', '/ps', '/cfs', '/is', '/m'];
-      const isPaginatedPage = paginatedPaths.some(p => path.endsWith(p));
-      const isFinancialStatement = ['/bs', '/ps', '/cfs', '/is'].some(p => path.endsWith(p));
-      if (!isPaginatedPage) return separatePages ? pagesData : accumulatedData;
-
-      console.log(`  [Lixinger] 开始 URL 分页遍历...`);
-
-      const buildUrl = (pageIndex) => {
-        const u = new URL(baseUrl);
-        u.searchParams.set('page-index', String(pageIndex));
-        if (isFinancialStatement) {
-          // 财务报表页面专用参数
-          if (!u.searchParams.has('modulate-type')) u.searchParams.set('modulate-type', 'auto');
-          if (!u.searchParams.has('fs-owner-type')) u.searchParams.set('fs-owner-type', 'consolidated');
-          if (!u.searchParams.has('granularity')) u.searchParams.set('granularity', 'q');
-          if (!u.searchParams.has('data-display-type')) u.searchParams.set('data-display-type', 'number');
-          if (!u.searchParams.has('with-latest-data')) u.searchParams.set('with-latest-data', 'false');
-          if (!u.searchParams.has('show-value-rebuilt-data')) u.searchParams.set('show-value-rebuilt-data', 'false');
-          if (!u.searchParams.has('data-report-type')) u.searchParams.set('data-report-type', 'all');
-          if (!u.searchParams.has('data-metrics-types')) u.searchParams.set('data-metrics-types', 't,c,c2y,yoy,coc');
-          if (!u.searchParams.has('compare-stock-ids')) u.searchParams.set('compare-stock-ids', '');
-          if (!u.searchParams.has('start-date')) {
-            const startYear = new Date().getFullYear() - 30;
-            const today = new Date().toISOString().split('T')[0];
-            u.searchParams.set('start-date', `${startYear}-01-01`);
-            u.searchParams.set('end-date', today);
-          }
-        } else if (path.endsWith('/m')) {
-          // 重大事项页面参数：只保留 granularity（年报/季报）
-          if (!u.searchParams.has('granularity')) u.searchParams.set('granularity', 'q');
-        }
-        return u.toString();
-      };
-
-      let pageIndex = 0;
-      const maxPages = 100;
-      let emptyCount = 0;
-      const maxEmpty = 3;
-
-      while (pageIndex < maxPages && emptyCount < maxEmpty) {
-        const pageUrl = buildUrl(pageIndex);
-        const currentUrl = page.url();
-
-        // 检查是否需要导航：page-index 不同 或 granularity 不同 都需要重新导航
-        const expectedGranularity = new URL(pageUrl).searchParams.get('granularity') || 'q';
-        const currentGranularity = new URL(currentUrl).searchParams.get('granularity') || 'q';
-        const needsNavigation = !currentUrl.includes(`page-index=${pageIndex}`) || currentGranularity !== expectedGranularity;
-
-        if (needsNavigation) {
-          console.log(`  [Lixinger] 导航到 page-index=${pageIndex} granularity=${expectedGranularity}...`);
-          await page.goto(pageUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-          await this.waitForLixingerContent(page);
-          await page.waitForTimeout(1500);
-        }
-
-        // 提取当前页表格数据（返回给 Node.js）
-        const pageTables = await page.evaluate(() => {
-          const results = [];
-          const tables = document.querySelectorAll('table');
-          tables.forEach((table, idx) => {
-            const headers = [];
-            const headerCells = table.querySelectorAll('thead th, thead td');
-            headerCells.forEach(cell => headers.push(cell.textContent?.trim() || ''));
-            if (headers.length === 0) {
-              const firstRow = table.querySelector('tr');
-              if (firstRow) {
-                firstRow.querySelectorAll('th, td').forEach(cell => headers.push(cell.textContent?.trim() || ''));
-              }
-            }
-
-            const rows = [];
-            const bodyRows = table.querySelectorAll('tbody tr');
-            const rowsToProcess = bodyRows.length > 0 ? bodyRows : table.querySelectorAll('tr');
-            rowsToProcess.forEach((row, rowIndex) => {
-              if (rowIndex === 0 && headers.length > 0 && bodyRows.length === 0) return;
-              const cells = Array.from(row.querySelectorAll('td, th'));
-              if (cells.length === 0) return;
-              const rowData = cells.map(cell => cell.textContent?.trim() || '');
-              if (rowData.every(c => c === '')) return;
-              rows.push(rowData);
-            });
-
-            if (headers.length > 0 || rows.length > 0) {
-              results.push({ index: idx, headers, rows, caption: '' });
-            }
-          });
-          return results;
-        });
-
-        if (separatePages) {
-          // 单独保存每个 page 的数据（不合并列）
-          const filteredTables = [];
-          for (const pt of pageTables) {
-            // 跳过公司概况表（PE-TTM 等）
-            if (pt.headers[0]?.includes('PE-TTM') || pt.headers[0]?.includes('贵州茅台 沪股通')) continue;
-            // 跳过空表或只有标签列的表
-            if (pt.headers.length <= 1 && pt.rows.length === 0) continue;
-
-            // 过滤掉纯子标题行（如 Q1/Q2/Q3/Q4/原值/同比/环比 等）
-            const filteredRows = pt.rows.filter(r => !this.isSubHeaderRow(r));
-
-            if (pt.headers.length > 0 || filteredRows.length > 0) {
-              filteredTables.push({
-                index: pt.index,
-                headers: [...pt.headers],
-                rows: filteredRows.map(r => [...r]),
-                caption: ''
-              });
-            }
-          }
-
-          // 检测是否有新数据：比较当前 page 和上一个 page 的表头（去掉标签列）
-          let hasNewData = false;
-          if (filteredTables.length > 0) {
-            if (pagesData.length === 0) {
-              hasNewData = true; // 第一个 page 总是有数据
-            } else {
-              const lastPage = pagesData[pagesData.length - 1];
-              for (const table of filteredTables) {
-                const lastTable = lastPage.tables.find(t => t.index === table.index);
-                if (!lastTable) {
-                  hasNewData = true;
-                  break;
-                }
-                // 比较数据列头（去掉第一个标签列）
-                const currentDataHeaders = table.headers.slice(1).join(',');
-                const lastDataHeaders = lastTable.headers.slice(1).join(',');
-                if (currentDataHeaders !== lastDataHeaders) {
-                  hasNewData = true;
-                  break;
-                }
-              }
-            }
-          }
-
-          if (hasNewData) {
-            pagesData.push({ pageIndex, tables: filteredTables });
-            emptyCount = 0;
-            console.log(`  [Lixinger] page-index=${pageIndex} 独立页面，${filteredTables.length} 个表格`);
-          } else {
-            emptyCount++;
-            console.log(`  [Lixinger] page-index=${pageIndex} 无新数据 (${emptyCount}/${maxEmpty})`);
-          }
-        } else {
-          // 水平合并：每个 page-index 显示相同行、不同列（年份），需要合并列
-          let totalNewCols = 0;
-          for (const pt of pageTables) {
-            // 跳过公司概况表（PE-TTM 等）
-            if (pt.headers[0]?.includes('PE-TTM') || pt.headers[0]?.includes('贵州茅台 沪股通')) continue;
-            // 跳过空表或只有标签列的表
-            if (pt.headers.length <= 2 && pt.rows.length === 0) continue;
-
-            // 过滤掉纯子标题行（如 Q1/Q2/Q3/Q4/原值/同比/环比 等）
-            const filteredRows = pt.rows.filter(r => !this.isSubHeaderRow(r));
-
-            let existing = accumulatedData.find(t => t.index === pt.index);
-            if (!existing) {
-              // 第一次遇到这个表格索引：完整复制
-              existing = {
-                index: pt.index,
-                headers: [...pt.headers],
-                rows: filteredRows.map(r => [...r]),
-                caption: ''
-              };
-              accumulatedData.push(existing);
-              totalNewCols += pt.headers.length > 0 ? pt.headers.length - 1 : 0;
-            } else {
-              // 已存在：水平合并列
-              const labelHeader = existing.headers[0];
-              const existingDataHeaders = existing.headers.slice(1);
-              const newDataHeaders = pt.headers.slice(1);
-
-              // 收集新出现的列头
-              const addedHeaders = [];
-              for (const h of newDataHeaders) {
-                if (!existingDataHeaders.includes(h)) {
-                  existingDataHeaders.push(h);
-                  addedHeaders.push(h);
-                }
-              }
-
-              if (addedHeaders.length === 0) continue;
-
-              existing.headers = [labelHeader, ...existingDataHeaders];
-              totalNewCols += addedHeaders.length;
-
-              // 为每一行追加新列的值
-              const newRowsMap = new Map();
-              for (const row of pt.rows) {
-                newRowsMap.set(row[0], row.slice(1));
-              }
-
-              // 更新已有行
-              for (const existingRow of existing.rows) {
-                const label = existingRow[0];
-                const newValues = newRowsMap.get(label);
-                if (newValues) {
-                  for (const h of addedHeaders) {
-                    const idx = newDataHeaders.indexOf(h);
-                    existingRow.push(idx >= 0 && idx < newValues.length ? newValues[idx] : '');
-                  }
-                  newRowsMap.delete(label);
-                } else {
-                  // 新页没有这一行，补空值
-                  for (const h of addedHeaders) {
-                    existingRow.push('');
-                  }
-                }
-              }
-
-              // 添加新页独有的行
-              for (const [label, newValues] of newRowsMap) {
-                const row = [label];
-                // 旧列补空
-                for (const h of existingDataHeaders) {
-                  const idx = newDataHeaders.indexOf(h);
-                  row.push(idx >= 0 && idx < newValues.length ? newValues[idx] : '');
-                }
-                existing.rows.push(row);
-              }
-            }
-          }
-
-          if (totalNewCols === 0) {
-            emptyCount++;
-            console.log(`  [Lixinger] page-index=${pageIndex} 无新列 (${emptyCount}/${maxEmpty})`);
-          } else {
-            emptyCount = 0;
-            console.log(`  [Lixinger] page-index=${pageIndex} 新增 ${totalNewCols} 列`);
-          }
-        }
-
-        pageIndex++;
-      }
-
-      // 导航回原始 URL，确保后续 UI 点击在原页面执行
-      const currentUrl = page.url();
-      if (!currentUrl.startsWith(baseUrl.split('?')[0])) {
-        console.log(`  [Lixinger] 导航回原始页面...`);
-        await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-        await this.waitForLixingerContent(page);
-      }
-
-      if (separatePages) {
-        console.log(`  [Lixinger] URL 分页遍历完成，共 ${pagesData.length} 个独立页面`);
-        return pagesData;
-      }
-
-      console.log(`  [Lixinger] URL 分页遍历完成，共检查 ${pageIndex} 页，累积 ${accumulatedData.length} 个表格`);
-    } catch (error) {
-      console.log(`  [Lixinger] URL 分页遍历结束: ${error.message}`);
-    }
-
-    return separatePages ? pagesData : accumulatedData;
-  }
-
-  /**
-   * 通过 UI 点击"下一页"遍历分页数据
-   * 用于 /m (财务指标) 等使用 JavaScript 分页而非 URL page-index 的页面
-   * 返回 { pageIndex, tables }[] 数组，每页独立保存
-   */
-  async fetchPaginatedUrlsByUIClick(page, baseUrl) {
-    const pagesData = [];
-    try {
-      const currentUrl = page.url();
-      const expectedGranularity = new URL(baseUrl).searchParams.get('granularity') || 'q';
-      const currentGranularity = new URL(currentUrl).searchParams.get('granularity') || 'q';
-      const needsNavigation = !currentUrl.startsWith(baseUrl.split('?')[0]) || currentGranularity !== expectedGranularity;
-      if (needsNavigation) {
-        await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-        await this.waitForLixingerContent(page);
-        await page.waitForTimeout(1500);
-      }
-
-      let pageIndex = 0;
-      const maxPages = 100;
-
-      while (pageIndex < maxPages) {
-        // 提取当前页表格数据
-        const pageTables = await page.evaluate(() => {
-          const results = [];
-          const tables = document.querySelectorAll('table');
-          tables.forEach((table, idx) => {
-            const headers = [];
-            const headerCells = table.querySelectorAll('thead th, thead td');
-            headerCells.forEach(cell => headers.push(cell.textContent?.trim() || ''));
-            if (headers.length === 0) {
-              const firstRow = table.querySelector('tr');
-              if (firstRow) {
-                firstRow.querySelectorAll('th, td').forEach(cell => headers.push(cell.textContent?.trim() || ''));
-              }
-            }
-
-            const rows = [];
-            const bodyRows = table.querySelectorAll('tbody tr');
-            const rowsToProcess = bodyRows.length > 0 ? bodyRows : table.querySelectorAll('tr');
-            rowsToProcess.forEach((row, rowIndex) => {
-              if (rowIndex === 0 && headers.length > 0 && bodyRows.length === 0) return;
-              const cells = Array.from(row.querySelectorAll('td, th'));
-              if (cells.length === 0) return;
-              const rowData = cells.map(cell => cell.textContent?.trim() || '');
-              if (rowData.every(c => c === '')) return;
-              rows.push(rowData);
-            });
-
-            if (headers.length > 0 || rows.length > 0) {
-              results.push({ index: idx, headers, rows, caption: '' });
-            }
-          });
-          return results;
-        });
-
-        // 过滤表格
-        const filteredTables = [];
-        for (const pt of pageTables) {
-          if (pt.headers[0]?.includes('PE-TTM') || pt.headers[0]?.includes('贵州茅台 沪股通')) continue;
-          if (pt.headers.length <= 1 && pt.rows.length === 0) continue;
-
-          const filteredRows = pt.rows.filter(r => !this.isSubHeaderRow(r));
-
-          if (pt.headers.length > 0 || filteredRows.length > 0) {
-            filteredTables.push({
-              index: pt.index,
-              headers: [...pt.headers],
-              rows: filteredRows.map(r => [...r]),
-              caption: ''
-            });
-          }
-        }
-
-        // 检测是否有新数据：比较当前 page 和上一个 page 的表头
-        let hasNewData = false;
-        if (filteredTables.length > 0) {
-          if (pagesData.length === 0) {
-            hasNewData = true;
-          } else {
-            const lastPage = pagesData[pagesData.length - 1];
-            for (const table of filteredTables) {
-              const lastTable = lastPage.tables.find(t => t.index === table.index);
-              if (!lastTable) {
-                hasNewData = true;
-                break;
-              }
-              const currentDataHeaders = table.headers.slice(1).join(',');
-              const lastDataHeaders = lastTable.headers.slice(1).join(',');
-              if (currentDataHeaders !== lastDataHeaders) {
-                hasNewData = true;
-                break;
-              }
-            }
-          }
-        }
-
-        if (!hasNewData) {
-          console.log(`  [Lixinger] UI分页 page=${pageIndex} 无新数据，停止`);
-          break;
-        }
-
-        pagesData.push({ pageIndex, tables: filteredTables });
-        console.log(`  [Lixinger] UI分页 page=${pageIndex}, ${filteredTables.length} 个表格`);
-
-        // 查找并点击"下一页"按钮
-        const nextBtn = page.locator('text=下一页').first();
-        const count = await nextBtn.count();
-        if (count === 0) {
-          console.log(`  [Lixinger] UI分页 未找到下一页按钮，停止`);
-          break;
-        }
-
-        const isDisabled = await nextBtn.evaluate(el => {
-          return el.disabled || el.classList.contains('disabled') ||
-                 el.classList.contains('el-pagination--disabled') ||
-                 el.getAttribute('aria-disabled') === 'true';
-        }).catch(() => false);
-
-        if (isDisabled) {
-          console.log(`  [Lixinger] UI分页 下一页已禁用，停止`);
-          break;
-        }
-
-        await nextBtn.click();
-        console.log(`  [Lixinger] UI分页 点击下一页...`);
-        await page.waitForTimeout(2000);
-        await this.waitForLixingerContent(page);
-
-        pageIndex++;
-      }
-
-      console.log(`  [Lixinger] UI分页完成，共 ${pagesData.length} 页`);
-    } catch (error) {
-      console.log(`  [Lixinger] UI分页结束: ${error.message}`);
-    }
-
-    return pagesData;
   }
 
   /**
@@ -2114,7 +1206,7 @@ class LixingerParser extends BaseParser {
           seenQuarters.add(qKey);
           uniqueData.push(d);
         }
-        if (uniqueData.length >= 20) break;
+        if (uniqueData.length >= 100) break;
       }
       const dates = uniqueData.map(d => {
         const date = new Date(d.date);
@@ -2404,7 +1496,7 @@ class LixingerParser extends BaseParser {
           seenMonths.add(monthKey);
           monthlyData.push(d);
         }
-        if (monthlyData.length >= 60) break; // 最多 60 个月
+        if (monthlyData.length >= 300) break; // 最多 300 个月（25年）
       }
 
       monthlyData.reverse(); // 从旧到新
@@ -2451,126 +1543,18 @@ class LixingerParser extends BaseParser {
    * 格式化最终结果
    */
   /**
-   * 判断表格是否为财务报表数据（资产负债表/利润表/现金流量表）
-   * 排除公司概况、估值指标等非财务表格
-   */
-  isFinancialTable(table) {
-    if (!table || !table.headers || table.rows.length === 0) return false;
-
-    const headerText = table.headers.join(' ');
-
-    // 快速判断 1：表头包含独立的年份/季度列 → 财务表
-    // 支持格式：2001, 2026Q1, Q1, 2026-05 等
-    const hasYearHeader = table.headers.some(h =>
-      /^\s*20\d{2}\s*$/.test(String(h)) ||           // 2001
-      /^\s*20\d{2}Q[1-4]\s*$/.test(String(h)) ||    // 2026Q1
-      /^\s*\d{4}-\d{2}\s*$/.test(String(h)) ||      // 2026-05
-      /^\s*Q[1-4]\s*$/.test(String(h))               // Q1
-    );
-    if (hasYearHeader) {
-      return true;
-    }
-
-    // 快速判断 2：表头包含明确的财务关键字 → 财务表
-    // 同时排除公司估值指标（PE-TTM、PB、股息率等）
-    const stockMetrics = ['PE-TTM', 'PB', '股息率', '股价', '涨跌幅', '市值'];
-    const hasStockMetrics = stockMetrics.some(m => headerText.includes(m));
-    if (hasStockMetrics) return false;
-
-    const financialTerms = [
-      '资产', '负债', '权益', '流动资产', '货币资金', '应收账款',
-      '存货', '固定资产', '无形资产', '商誉', '长期股权投资',
-      '负债合计', '流动负债', '非流动负债', '应付账款',
-      '所有者权益', '股本', '资本公积', '未分配利润',
-      '营业收入', '营业成本', '净利润', '毛利率',
-      '现金流量', '经营活动', '投资活动', '筹资活动',
-      '默认单位', '审计意见', '报表日期'
-    ];
-    const hasFinancialHeader = financialTerms.some(term => headerText.includes(term));
-    if (hasFinancialHeader) return true;
-
-    // 排除 API 原始数据表格（字段名为英文代码如 q.bs.ta, stockId 等）
-    const isApiRawData = table.source === 'api' ||
-      table.headers.some(h => /^(stockId|date|ownerType|dataType|q\.bs\.|q\.is\.|q\.cf\.)/.test(String(h)));
-    if (isApiRawData) return false;
-
-    // 排除公司概况表格（包含 PE-TTM、PB、股息率、股价等）
-    const allText = [...table.headers, ...table.rows.flat()].join(' ');
-    const nonFinancialPatterns = [
-      /PE-TTM.*PB.*股息率/,
-      /股价.*涨跌幅.*市值/,
-      /所属三级行业.*申万/,
-      /所属指数.*纳入纳出/,
-      /最新大宗交易/,
-      /实际控制人/
-    ];
-    if (nonFinancialPatterns.some(p => p.test(allText))) return false;
-
-    // 排除纯子标题表格（只包含 Q1/Q2/Q3/Q4/原值/同比/环比/当期/累计/单季/年比 等）
-    const subHeaderTerms = ['Q1', 'Q2', 'Q3', 'Q4', '原值', '同比', '环比', '当期', '累计', '单季', '年比'];
-    const isSubHeaderOnly = table.rows.length > 0 && table.rows.every(row => {
-      const nonEmptyCells = row.filter(c => c && c.trim() !== '');
-      if (nonEmptyCells.length === 0) return true;
-      return nonEmptyCells.every(c => subHeaderTerms.includes(c.trim()));
-    });
-    if (isSubHeaderOnly) return false;
-
-    // 排除只有 "默认单位" 一个表头、无年份列的无意义表格
-    if (table.headers.length === 1 && table.headers[0].includes('默认单位')) return false;
-
-    // 兜底：整表包含财务关键字或年份/季度，且有一定规模
-    const hasFinancialTerm = financialTerms.some(term => allText.includes(term));
-    const hasYearOrQuarter = /\b20\d{2}\b/.test(allText) || /\bQ[1-4]\b/.test(allText);
-    const isLargeTable = table.rows.length > 30;
-
-    return hasFinancialTerm || hasYearOrQuarter || isLargeTable;
-  }
-
-  /**
-   * 根据 URL 生成建议文件名，包含粒度标识（yearly/quarter/half_year）
+   * 根据 URL 生成建议文件名
    */
   buildSuggestedFilename(url) {
     try {
       const u = new URL(url);
       const path = u.pathname;
 
-      // 从路径推断报表类型（只匹配真正的财务报表页面，排除 /fundamental/* 分析页面）
-      const pathMap = {
-        '/bs': '资产负债表',
-        '/ps': '利润表',
-        '/cfs': '现金流量表',
-        '/is': '利润表'
-      };
-      let reportType = '';
-      // 排除 fundamental 分析页面，避免 /fundamental/cashflow 被误判为现金流量表
-      const isFundamentalPage = path.includes('/fundamental/');
-      if (!isFundamentalPage) {
-        for (const [key, value] of Object.entries(pathMap)) {
-          if (path.endsWith(key)) {
-            reportType = value;
-            break;
-          }
-        }
-      }
-
       // 从路径提取股票代码（如 600519）
       const stockMatch = path.match(/\/(sh|sz)\/(\d+)/);
       const stockCode = stockMatch ? stockMatch[2] : '';
 
-      // 在财务报表页面（bs/ps/cfs）添加粒度后缀
-      // /m 页面的粒度后缀在 parse() 中单独处理
-      if (reportType) {
-        const granularity = u.searchParams.get('granularity') || 'q';
-        const granularitySuffix = { y: 'yearly', q: 'quarter', h: 'half_year' }[granularity] || 'quarter';
-        return `${stockCode}_${reportType}_${granularitySuffix}`;
-      }
-
-      // /m (财务指标矩阵 / matrix) 页面单独处理
-      if (path.endsWith('/m')) {
-        return `${stockCode}_matrix`;
-      }
-
-      // 非财务报表页面：用 URL 路径最后几段拼接文件名（如 subsidiary-companies, fundamental_valuation_primary）
+      // 用 URL 路径最后几段拼接文件名（如 subsidiary-companies, fundamental_valuation_primary）
       const pathParts = path.split('/').filter(p => p && !/^\d+$/.test(p) && !['sh', 'sz', 'analytics', 'company', 'detail', 'open', 'api'].includes(p));
       const suffix = pathParts.join('_');
       if (suffix) {
@@ -2621,18 +1605,6 @@ class LixingerParser extends BaseParser {
     return overviewPatterns.some(p => p.test(allText));
   }
 
-  /**
-   * 判断一行是否仅为季度/指标子标题行（如 "Q1|Q4|Q3|Q2|Q1" 或 "原值|同比|环比"）
-   * 这些行在 DOM 中作为视觉分隔，没有实际财务数据，应从输出中剔除
-   */
-  isSubHeaderRow(row) {
-    if (!row || row.length === 0) return true;
-    const subHeaderTerms = ['Q1', 'Q2', 'Q3', 'Q4', '原值', '同比', '环比', '当期', '累计', '单季', '年比'];
-    const nonEmptyCells = row.filter(c => c && c.trim() !== '');
-    if (nonEmptyCells.length === 0) return true;
-    return nonEmptyCells.every(c => subHeaderTerms.includes(c.trim()));
-  }
-
   formatResult(data, url) {
     let allTables = data.tables || [];
 
@@ -2648,32 +1620,24 @@ class LixingerParser extends BaseParser {
       return true;
     });
 
-    // 2. 公司概况表格（PE-TTM、PB、所属行业等）只在 fundamental 页保留
-    // 其他页面（matrix、custom、bs 等）都跳过，避免所有文件内容雷同
-    // 匹配 /fundamental 及其子页面（如 /fundamental/valuation/primary）
-    const isFundamentalPage = /\/fundamental\b/.test(url);
-    if (!isFundamentalPage) {
-      allTables = allTables.filter(t => !this.isCompanyOverviewTable(t));
-    }
+    // 2. 公司概况表格（PE-TTM、PB、所属行业等）跳过，避免所有文件内容雷同
+    allTables = allTables.filter(t => !this.isCompanyOverviewTable(t));
 
-    // 3. metric-section 产生的零散指标表格（如 PE-TTM、PB 等单值表格）
-    // 只在 fundamental 页保留，其他页面跳过
-    if (!isFundamentalPage) {
-      allTables = allTables.filter(t => {
-        // 跳过 source === 'metric-section' 的零散指标表格
-        if (t.source === 'metric-section') return false;
-        // 跳过只有 2 列且表头为 "指标 | 数值" 的小型估值表格
-        if (t.headers?.length === 2 && t.headers[0] === '指标' && t.headers[1] === '数值' && t.rows?.length <= 50) {
-          const allText = t.rows.flat().join(' ');
-          // 如果内容只包含数字、百分比或少量中文，判定为估值指标碎片
-          const isMetricFragment = !allText.includes('资产') && !allText.includes('负债')
-            && !allText.includes('收入') && !allText.includes('现金')
-            && !allText.includes('利润') && !allText.includes('成本');
-          if (isMetricFragment) return false;
-        }
-        return true;
-      });
-    }
+    // 3. metric-section 产生的零散指标表格（如 PE-TTM、PB 等单值表格）跳过
+    allTables = allTables.filter(t => {
+      // 跳过 source === 'metric-section' 的零散指标表格
+      if (t.source === 'metric-section') return false;
+      // 跳过只有 2 列且表头为 "指标 | 数值" 的小型估值表格
+      if (t.headers?.length === 2 && t.headers[0] === '指标' && t.headers[1] === '数值' && t.rows?.length <= 50) {
+        const allText = t.rows.flat().join(' ');
+        // 如果内容只包含数字、百分比或少量中文，判定为估值指标碎片
+        const isMetricFragment = !allText.includes('资产') && !allText.includes('负债')
+          && !allText.includes('收入') && !allText.includes('现金')
+          && !allText.includes('利润') && !allText.includes('成本');
+        if (isMetricFragment) return false;
+      }
+      return true;
+    });
 
     // 4. 过滤 API 原始数据表格（字段名为英文代码如 stockId, candlestick._id, date 等）
     // 这些表格在所有页面都应排除，因为它们包含内部字段而非人类可读数据
@@ -2731,17 +1695,6 @@ class LixingerParser extends BaseParser {
       return true;
     });
 
-    // 6. 只在真正的财务报表页面（资产负债表/利润表/现金流量表）上应用财务表格过滤
-    const isFinancialStatementPage = /\/(bs|ps|cfs|is|cashflow|income)\b/.test(url);
-    const financialTables = isFinancialStatementPage
-      ? allTables.filter(t => this.isFinancialTable(t))
-      : allTables;
-
-    // 只保留表格类型的 mainContent
-    const financialMainContent = (data.mainContent || [])
-      .filter(item => item.type === 'table')
-      .filter(item => !isFinancialStatementPage || this.isFinancialTable(item));
-
     // 7. 保留页面特有的说明文字（如数据来源、更新频率等），过滤掉导航/页脚等通用文字
     const usefulParagraphs = (data.paragraphs || []).filter(p => {
       const text = String(p).trim();
@@ -2773,10 +1726,10 @@ class LixingerParser extends BaseParser {
       title: '',
       description: '',
       headings: [],
-      mainContent: financialMainContent,
+      mainContent: (data.mainContent || []).filter(item => item.type === 'table'),
       paragraphs: uniqueParagraphs,
       lists: [],
-      tables: financialTables,
+      tables: allTables,
       codeBlocks: [],
       images: [],
       charts: [],

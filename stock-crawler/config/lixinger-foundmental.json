@@ -1,5 +1,5 @@
 {
-  "name": "lixinger-crawler",
+  "name": "lixinger-fundmental",
   "seedUrls": [
     "https://www.lixinger.com/analytics/company/detail/sh/600519/600519",
     "https://www.lixinger.com/analytics/company/detail/sh/600519/600519/fundamental/valuation",
@@ -22,7 +22,7 @@
   ],
   "urlRules": {
     "include": [
-      ".*lixinger\\.com/analytics/company/detail/sh/600519/600519/.*"
+      ".*lixinger\\.com/analytics/company/detail/sh/600519/600519/fundamental/.*"
     ],
     "exclude": [
       ".*login.*",

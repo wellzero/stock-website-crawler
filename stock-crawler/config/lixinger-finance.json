@@ -1,0 +1,42 @@
+{
+  "name": "lixinger-finance",
+  "seedUrls": [
+    "https://www.lixinger.com/analytics/company/detail/sh/600519/600519/bs",
+    "https://www.lixinger.com/analytics/company/detail/sh/600519/600519/ps",
+    "https://www.lixinger.com/analytics/company/detail/sh/600519/600519/cfs",
+    "https://www.lixinger.com/analytics/company/detail/sh/600519/600519/is",
+    "https://www.lixinger.com/analytics/company/detail/sh/600519/600519/m",
+    "https://www.lixinger.com/analytics/company/detail/sh/600519/600519/operation-revenue-constitution"
+  ],
+  "urlRules": {
+    "include": [
+      ".*lixinger\\.com/analytics/company/detail/sh/600519/600519/(bs|ps|cfs|is|m|operation-revenue-constitution).*"
+    ],
+    "exclude": [
+      ".*login.*",
+      ".*logout.*",
+      ".*register.*",
+      ".*open/api/doc.*",
+      ".*/major-issues/.*"
+    ]
+  },
+  "login": {
+    "required": true,
+    "username": "13311390323",
+    "password": "3228552",
+    "loginUrl": "https://www.lixinger.com/open/api/my-apis"
+  },
+  "crawler": {
+    "headless": true,
+    "timeout": 30000,
+    "waitBetweenRequests": 1000,
+    "maxRetries": 3,
+    "batchSize": 100,
+    "userDataDir": "./chrome_user_data"
+  },
+  "output": {
+    "directory": "./output",
+    "format": "markdown",
+    "savePages": true
+  }
+}
