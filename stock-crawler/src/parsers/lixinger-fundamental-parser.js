@@ -1108,8 +1108,7 @@ class LixingerFundamentalParser {
     console.log('=== Lixinger Fundamental Parser ===\n');
 
     ensureDir(this.config.outputDir);
-    const timestamp = new Date().toISOString().replace(/[:T]/g, '-').slice(0, 19);
-    const pagesDir = path.join(this.config.outputDir, `pages-${timestamp}`);
+    const pagesDir = path.join(this.config.outputDir, 'data');
     ensureDir(pagesDir);
 
     console.log(`[Output] ${pagesDir}\n`);
