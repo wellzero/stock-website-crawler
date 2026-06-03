@@ -54,10 +54,12 @@ class LixingerMktIdParser {
   }
 
   /**
-   * 匹配理杏仁公司详情页 URL
+   * 匹配理杏仁公司详情页 URL（仅匹配基础详情页，不匹配财务/基本面子页面）
    */
   matches(url) {
-    return /lixinger\.com\/analytics\/company\/detail\/[^/]+\/[^/]+\/\d+/.test(url);
+    // 只匹配形如 /detail/{market}/{code}/{code_id} 的基础页面
+    // 排除 /bs /ps /cfs /is /m /fundamental /operation-revenue-constitution 等子页面
+    return /lixinger\.com\/analytics\/company\/detail\/[^/]+\/[^/]+\/\d+\/?(?:[?#]|$)/.test(url);
   }
 
   /**
