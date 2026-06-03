@@ -3,7 +3,7 @@
 /**
  * Lixinger Finance Parser
  * 专门处理理杏仁财务数据页面：
- *   /bs (资产负债表), /ps (利润表), /cfs (现金流量表), /is (利润表),
+ *   /bs (资产负债表), /ps (利润表), /cfs (现金流量表), /is (行业统计),
  *   /m (重大事项), /operation-revenue-constitution (营收构成)
  *
  * 继承 LixingerParser 的全部能力，覆盖 URL 匹配、分页遍历、文件名生成等逻辑，
@@ -39,7 +39,7 @@ class LixingerFinanceParser extends LixingerParser {
     const links = await linkFinder.extractLinks(page, urlRules, { fetchMethod: 'playwright' });
 
     // parse() already handles both quarterly (q) and yearly (y) for financial
-    // statement pages (/bs, /ps, /cfs, /is, /m) in a single visit. Adding
+    // statement pages (/bs, /ps, /cfs, /m) in a single visit. Adding
     // granularity variants here would cause duplicate downloads.
     return links;
   }
@@ -52,7 +52,7 @@ class LixingerFinanceParser extends LixingerParser {
     const path = urlObj.pathname;
     const paginatedPaths = ['/bs', '/ps', '/cfs', '/is', '/m'];
     const isPaginatedPage = paginatedPaths.some(p => path.endsWith(p));
-    const isFinancialStatement = ['/bs', '/ps', '/cfs', '/is'].some(p => path.endsWith(p));
+    const isFinancialStatement = ['/bs', '/ps', '/cfs'].some(p => path.endsWith(p));
 
     // 分页页面：每页数据存为独立文件（如 600519_资产负债表_quarter_0.md, _1.md...）
     if (isPaginatedPage && options.pagesDir) {
@@ -161,7 +161,7 @@ class LixingerFinanceParser extends LixingerParser {
 
       const paginatedPaths = ['/bs', '/ps', '/cfs', '/is', '/m'];
       const isPaginatedPage = paginatedPaths.some(p => path.endsWith(p));
-      const isFinancialStatement = ['/bs', '/ps', '/cfs', '/is'].some(p => path.endsWith(p));
+      const isFinancialStatement = ['/bs', '/ps', '/cfs'].some(p => path.endsWith(p));
       if (!isPaginatedPage) return separatePages ? pagesData : accumulatedData;
 
       console.log(`  [FinanceParser] 开始 URL 分页遍历...`);
@@ -614,7 +614,7 @@ class LixingerFinanceParser extends LixingerParser {
         '/bs': '资产负债表',
         '/ps': '利润表',
         '/cfs': '现金流量表',
-        '/is': '利润表'
+        '/is': '行业统计'
       };
       let reportType = '';
       const isFundamentalPage = path.includes('/fundamental/');
@@ -655,9 +655,11 @@ class LixingerFinanceParser extends LixingerParser {
    * 格式化结果 — 覆盖以添加财务报表过滤
    */
   formatResult(data, url) {
-    const isFinancialStatementPage = /\/(bs|ps|cfs|is|cashflow|income)\b/.test(url);
+    const isFinancialStatementPage = /\/(bs|ps|cfs|cashflow|income)\b/.test(url);
     if (!isFinancialStatementPage) {
-      return super.formatResult(data, url);
+      const result = super.formatResult(data, url);
+      result.skipDefaultMarkdownOutput = data.skipDefaultMarkdownOutput;
+      return result;
     }
 
     let allTables = data.tables || [];
@@ -785,7 +787,8 @@ class LixingerFinanceParser extends LixingerParser {
       pageFeatures: { suggestedType: 'lixinger', confidence: 100, signals: ['vue-spa', 'financial-data'] },
       tabsAndDropdowns: [],
       dateFilters: [],
-      suggestedFilename: this.buildSuggestedFilename(url)
+      suggestedFilename: this.buildSuggestedFilename(url),
+      skipDefaultMarkdownOutput: data.skipDefaultMarkdownOutput
     };
   }
 }
