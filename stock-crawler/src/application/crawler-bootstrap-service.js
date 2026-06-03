@@ -34,7 +34,8 @@ class CrawlerBootstrapService {
     const statsTracker = new StatsTracker();
 
     const timestamp = logger.getTimestamp();
-    const pagesDir = `${projectDir}/pages-${timestamp}`;
+    const isLixinger = config.name && config.name.startsWith('lixinger');
+    const pagesDir = isLixinger ? `${projectDir}/data` : `${projectDir}/pages-${timestamp}`;
     if (!fs.existsSync(pagesDir)) {
       fs.mkdirSync(pagesDir, { recursive: true });
     }

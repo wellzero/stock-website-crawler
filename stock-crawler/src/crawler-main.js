@@ -51,8 +51,10 @@ class CrawlerMain {
     this.statsTracker = new StatsTracker();
     
     // Create pages directory with timestamp suffix matching log file
+    // For lixinger configs, use fixed 'data' directory instead of timestamped
     const timestamp = this.logger.getTimestamp();
-    this.pagesDir = `${this.projectDir}/pages-${timestamp}`;
+    const isLixinger = this.config.name && this.config.name.startsWith('lixinger');
+    this.pagesDir = isLixinger ? `${this.projectDir}/data` : `${this.projectDir}/pages-${timestamp}`;
     if (!fs.existsSync(this.pagesDir)) {
       fs.mkdirSync(this.pagesDir, { recursive: true });
     }
