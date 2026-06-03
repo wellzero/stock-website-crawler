@@ -38,46 +38,10 @@ class LixingerFinanceParser extends LixingerParser {
     const linkFinder = new LinkFinder();
     const links = await linkFinder.extractLinks(page, urlRules, { fetchMethod: 'playwright' });
 
-    // 为财务页面添加年报/季报粒度
-    const financialPaths = ['/bs', '/ps', '/cfs', '/is', '/m'];
-    const extraLinks = [];
-    const granularities = [
-      { key: 'y', suffix: 'yearly' },
-      { key: 'q', suffix: 'quarter' }
-    ];
-
-    for (const url of links) {
-      if (!financialPaths.some(p => url.includes(p))) continue;
-      try {
-        const u = new URL(url);
-        const currentGranularity = u.searchParams.get('granularity');
-        for (const g of granularities) {
-          // 如果原始 URL 没有 granularity，跳过 quarter（原始 URL 会默认处理为季报）
-          if (!currentGranularity && g.key === 'q') continue;
-          if (currentGranularity === g.key) continue;
-          const newUrl = new URL(url);
-          newUrl.searchParams.set('granularity', g.key);
-          // 保留其他必要参数
-          if (!newUrl.searchParams.has('fs-owner-type')) {
-            newUrl.searchParams.set('fs-owner-type', 'consolidated');
-          }
-          if (!newUrl.searchParams.has('data-display-type')) {
-            newUrl.searchParams.set('data-display-type', 'number');
-          }
-          if (!newUrl.searchParams.has('data-report-type')) {
-            newUrl.searchParams.set('data-report-type', 'all');
-          }
-          if (!newUrl.searchParams.has('data-metrics-types')) {
-            newUrl.searchParams.set('data-metrics-types', 't,c,c2y,yoy,coc');
-          }
-          extraLinks.push(newUrl.toString());
-        }
-      } catch (e) {
-        // ignore invalid URLs
-      }
-    }
-
-    return [...links, ...extraLinks];
+    // parse() already handles both quarterly (q) and yearly (y) for financial
+    // statement pages (/bs, /ps, /cfs, /is, /m) in a single visit. Adding
+    // granularity variants here would cause duplicate downloads.
+    return links;
   }
 
   /**
@@ -100,9 +64,14 @@ class LixingerFinanceParser extends LixingerParser {
       const fs = await import('fs');
 
       for (const gran of granularities) {
-        const pageUrlWithGran = gran !== null
-          ? `${url}${url.includes('?') ? '&' : '?'}granularity=${gran}`
-          : url;
+        let pageUrlWithGran;
+        if (gran !== null) {
+          const u = new URL(url);
+          u.searchParams.set('granularity', gran);
+          pageUrlWithGran = u.toString();
+        } else {
+          pageUrlWithGran = url;
+        }
         const paginatedPages = path.endsWith('/m')
           ? await this.fetchPaginatedUrlsByUIClick(page, pageUrlWithGran)
           : await this.fetchPaginatedUrls(page, pageUrlWithGran, { separatePages: true });
@@ -138,7 +107,9 @@ class LixingerFinanceParser extends LixingerParser {
           if (validTables.length === 0) continue;
 
           const sections = [];
-          const pageUrl = `${pageUrlWithGran}${pageUrlWithGran.includes('?') ? '&' : '?'}page-index=${pageIndex}`;
+          const pageUrlObj = new URL(pageUrlWithGran);
+          pageUrlObj.searchParams.set('page-index', String(pageIndex));
+          const pageUrl = pageUrlObj.toString();
           sections.push(`## 源URL\n\n${pageUrl}`);
           for (const table of validTables) {
             sections.push('');
