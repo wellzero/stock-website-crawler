@@ -31,6 +31,11 @@ from .base import (
     global_factor_registry,
     FactorRegistry,
 )
+from .panel_base import PanelFactorBase
+from .registry_extensions import add_registry_extensions
+
+# 应用注册表扩展
+add_registry_extensions()
 
 from .constants import (
     CNE6_STYLE_FACTORS,
@@ -150,3 +155,6 @@ if QLIB_ALPHA_AVAILABLE:
             "get_alpha_values_jq",
         ]
     )
+
+# 导入时间序列因子模块
+from . import time_series

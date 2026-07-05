@@ -1,0 +1,396 @@
+path,file_name,category,role,allocation,salvage_value,in_scope,scan_status,run_status,root_cause
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/01 7年40倍模拟超过两年年化高回撤低.txt,01 7年40倍模拟超过两年年化高回撤低.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/01 wywy1995大侠的小市值AI因子选股 5组参数50股.txt,01 wywy1995大侠的小市值AI因子选股 5组参数50股.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/01 一颗耀眼的星—【回顾2】小市值成长股策略更新—改.txt,01 一颗耀眼的星—【回顾2】小市值成长股策略更新—改.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/01 首板低开策略.txt,01 首板低开策略.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/01 龙回头3.0回测速度优化版.txt,01 龙回头3.0回测速度优化版.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/02 7年40倍绩优低价超跌缩量小盘 扩容到50只.txt,02 7年40倍绩优低价超跌缩量小盘 扩容到50只.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/02 ETF动量轮动RSRS择时-魔改3小优化.txt,02 ETF动量轮动RSRS择时-魔改3小优化.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/02 连板龙头策略.txt,02 连板龙头策略.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/02 龙头底分型战法-两年23倍.txt,02 龙头底分型战法-两年23倍.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/03 5年15倍的收益，年化79.93%，可实盘，拿走不谢！.txt,03 5年15倍的收益，年化79.93%，可实盘，拿走不谢！.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/03 一个简单而持续稳定的懒人超额收益策略.txt,03 一个简单而持续稳定的懒人超额收益策略.txt,W2_主观作业分享实盘,M_主策略_可独立alpha,05_增强位_主观特色,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/03 多策略融合-80倍.txt,03 多策略融合-80倍.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/03 截止到21年12月依然有效的小市值适配因子.txt,03 截止到21年12月依然有效的小市值适配因子.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/03 高评分ETF策略之核心资产轮动.txt,03 高评分ETF策略之核心资产轮动.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/04 红利搬砖_测试版.txt,04 红利搬砖_测试版.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,A_首选,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/04 红利搬砖_简化测试版.txt,04 红利搬砖_简化测试版.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,A_首选,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/04 红利搬砖，年化29%.txt,04 红利搬砖，年化29%.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,A_首选,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/04 苦咖啡-默默赚钱系列-改.txt,04 苦咖啡-默默赚钱系列-改.txt,P_苦咖啡默默赚钱,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/04 集合竞价摸奖策略1.0-致敬2022.txt,04 集合竞价摸奖策略1.0-致敬2022.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/04 首板低开策略.txt,04 首板低开策略.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/04 高股息低市盈率高增长的价投策略.txt,04 高股息低市盈率高增长的价投策略.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+"/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/05 8年10倍回撤小,有滑点,ETF动量简单轮动策略.txt","05 8年10倍回撤小,有滑点,ETF动量简单轮动策略.txt",B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/05 价值低波（下）--十年十倍（2020拜年）.txt,05 价值低波（下）--十年十倍（2020拜年）.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/05 四大搅屎棍策略.txt,05 四大搅屎棍策略.txt,W2_主观作业分享实盘,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/05 用机器学习批量快速生产小盘策略.txt,05 用机器学习批量快速生产小盘策略.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/05 随机森林策略，低换手率，年化近50%.txt,05 随机森林策略，低换手率，年化近50%.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/06 87.5%胜率之分歧反包二板.txt,06 87.5%胜率之分歧反包二板.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/06 PEG+成长+小市值+RSRS择时.txt,06 PEG+成长+小市值+RSRS择时.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/06 国九小市值策略【年化100.5% 回撤25.6%】.txt,06 国九小市值策略【年化100.5% 回撤25.6%】.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,A_首选,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/06 高股息低杠杆稳定小市值轮动策略.txt,06 高股息低杠杆稳定小市值轮动策略.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,A_首选,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/07 为了挣点积分自己实盘的策略分享出来.txt,07 为了挣点积分自己实盘的策略分享出来.txt,W2_主观作业分享实盘,F_框架工具_实盘基础设施,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/07 股债波动平衡.txt,07 股债波动平衡.txt,I_多资产_股债_全天候,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/07 致敬经典作品——小兵哥《一致性风险度量》——极速版.txt,07 致敬经典作品——小兵哥《一致性风险度量》——极速版.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,A_首选,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/07 连板龙头策略.txt,07 连板龙头策略.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/07 追首板涨停 过去两年年化304%.txt,07 追首板涨停 过去两年年化304%.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/08 14个月200%，超短线实盘交易策略！无未来函数.txt,08 14个月200%，超短线实盘交易策略！无未来函数.txt,W_短线超短分钟级,M_主策略_可独立alpha,03_进攻位_短线题材,C_慎用_依赖手工,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/08 ETF动量轮动RSRS择时-魔改3小优化.txt,08 ETF动量轮动RSRS择时-魔改3小优化.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/08 因子分析 营业利润TTM.txt,08 因子分析 营业利润TTM.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/08 国九条后中小板微盘小改，年化135.40%.txt,08 国九条后中小板微盘小改，年化135.40%.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,A_首选,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/08 科技与狠活 纯粹的数据挖掘策略.txt,08 科技与狠活 纯粹的数据挖掘策略.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/09 大容量小市值持仓95只，媲美金元顺安元启.txt,09 大容量小市值持仓95只，媲美金元顺安元启.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,A_首选,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/09 干积分-量化策略简易框架.txt,09 干积分-量化策略简易框架.txt,W2_主观作业分享实盘,F_框架工具_实盘基础设施,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/09 持续跑赢大盘-真蓝筹v2(资金容量千万以上).txt,09 持续跑赢大盘-真蓝筹v2(资金容量千万以上).txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/10 10倍-二板排板战法优化.txt,10 10倍-二板排板战法优化.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/10 10年52倍，年化59%，全新因子方法超稳定.txt,10 10年52倍，年化59%，全新因子方法超稳定.txt,X_防御ST抄底低回撤,M_主策略_可独立alpha,04_危机位_危机模式,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/10 多因子宽基ETF择时轮动改进版-高收益大资金低回撤.txt,10 多因子宽基ETF择时轮动改进版-高收益大资金低回撤.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/10 龙头首阴战法改版二.txt,10 龙头首阴战法改版二.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/100 全市场选股？7年5倍不择时，回撤30%左右.txt,100 全市场选股？7年5倍不择时，回撤30%左右.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/11 一个简单而持续稳定的懒人超额收益策略.txt,11 一个简单而持续稳定的懒人超额收益策略.txt,W2_主观作业分享实盘,M_主策略_可独立alpha,05_增强位_主观特色,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/11 低价小盘简单有效.txt,11 低价小盘简单有效.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/11 低风险中等收益策略.txt,11 低风险中等收益策略.txt,W_短线超短分钟级,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/11 缠论交易策略.txt,11 缠论交易策略.txt,H_趋势_缠论_形态_K线,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/12 全市场选股？7年5倍不择时，回撤30%左右.txt,12 全市场选股？7年5倍不择时，回撤30%左右.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/12 用子账户模拟多策略分仓.txt,12 用子账户模拟多策略分仓.txt,W2_主观作业分享实盘,F_框架工具_实盘基础设施,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/12 致敬市场--5 定投ETF之躺平赢.txt,12 致敬市场--5 定投ETF之躺平赢.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/12 致敬聚宽： 机器学习多因子，50只持仓，14年37倍.txt,12 致敬聚宽： 机器学习多因子，50只持仓，14年37倍.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/13 5年15倍的收益，年化79.93%，可实盘策略，拿走不谢！.txt,13 5年15倍的收益，年化79.93%，可实盘策略，拿走不谢！.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/13 7年40倍模拟超过两年年化高回撤低.txt,13 7年40倍模拟超过两年年化高回撤低.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/13 不含未来宽基etf轮动8年50倍年化60%.txt,13 不含未来宽基etf轮动8年50倍年化60%.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/13 首板高开-低开-弱转强混合策略（今年收益1138.61%）.txt,13 首板高开-低开-弱转强混合策略（今年收益1138.61%）.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/14 FOF养老成长基金-v2.0.txt,14 FOF养老成长基金-v2.0.txt,V_北向聪明钱基金抱团,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/14 为实盘做的更新： 分钟级别和盘中止损.txt,14 为实盘做的更新： 分钟级别和盘中止损.txt,W_短线超短分钟级,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/14 四年多翻9倍，年化73%，成长因子评分筛选.txt,14 四年多翻9倍，年化73%，成长因子评分筛选.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/14 安全摸狗策略.txt,14 安全摸狗策略.txt,W_短线超短分钟级,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/14 胜率65%之缩量分歧反包战法.txt,14 胜率65%之缩量分歧反包战法.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/15 10年52倍，年化59%，全新因子方法超稳定.txt,15 10年52倍，年化59%，全新因子方法超稳定.txt,X_防御ST抄底低回撤,M_主策略_可独立alpha,04_危机位_危机模式,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/15 2020年 267%年化 13%回撤 上涨趋势策略修改版.txt,15 2020年 267%年化 13%回撤 上涨趋势策略修改版.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/15 小市值排除3个bug版，22年至今收益506%回撤11%.txt,15 小市值排除3个bug版，22年至今收益506%回撤11%.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/15 小市值策略之再优化，年化接近翻倍.txt,15 小市值策略之再优化，年化接近翻倍.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/15 高股息低杠杆小市值轮动策略.txt,15 高股息低杠杆小市值轮动策略.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/16 ETF轮动策略升级-多类别-低回撤.txt,16 ETF轮动策略升级-多类别-低回撤.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/16 动量ETF轮动RSRS择时-升级.txt,16 动量ETF轮动RSRS择时-升级.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/16 大市值价值投资，从2005年至今超额稳定.txt,16 大市值价值投资，从2005年至今超额稳定.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/16 集合竞价三合一，今年收益1067%，年化198%.txt,16 集合竞价三合一，今年收益1067%，年化198%.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/17 5年多因子超额收益1055%，K线风险过滤，无未来函数.txt,17 5年多因子超额收益1055%，K线风险过滤，无未来函数.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+"/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/17 8年13倍的ETF动量轮动策略,有滑点,无未来函数,回撤小.txt","17 8年13倍的ETF动量轮动策略,有滑点,无未来函数,回撤小.txt",B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/17 基金跟随策略，19年年化60%.txt,17 基金跟随策略，19年年化60%.txt,V_北向聪明钱基金抱团,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/17 多品种ETF动量轮动+EPO优化.txt,17 多品种ETF动量轮动+EPO优化.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/17 科技与狠活.txt,17 科技与狠活.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/18 20行代码8年高胜率躲过了牛年第一场大跌.txt,18 20行代码8年高胜率躲过了牛年第一场大跌.txt,Y_研报深度解析复现,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/18 6年17倍的etf+分级b的轮动趋势策略跟随感悟.txt,18 6年17倍的etf+分级b的轮动趋势策略跟随感悟.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/18 动量ETF轮动-RSRS择时-卡尔曼滤波.txt,18 动量ETF轮动-RSRS择时-卡尔曼滤波.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/19 【复现】高频价量相关性，意想不到的选股因子.txt,19 【复现】高频价量相关性，意想不到的选股因子.txt,Y_研报深度解析复现,R_研究素材_复现与因子,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/19 复现FFScore财务模型.txt,19 复现FFScore财务模型.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/19 机器学习线性回归小市值.txt,19 机器学习线性回归小市值.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/19 简单到发指的股指策略(2013到现在收益10949%).txt,19 简单到发指的股指策略(2013到现在收益10949%).txt,N_CTA期货股指套利,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/19 高股息低市盈率稳健增长的价投策略.txt,19 高股息低市盈率稳健增长的价投策略.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/20 【复现】因子择时？？？.txt,20 【复现】因子择时？？？.txt,Y_研报深度解析复现,R_研究素材_复现与因子,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/20 冲天炮最高板策略，收益惊呆了我.txt,20 冲天炮最高板策略，收益惊呆了我.txt,W_短线超短分钟级,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/20 小市值高频交易法有赚就好 2年3.86%低回撤.txt,20 小市值高频交易法有赚就好 2年3.86%低回撤.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/21 【原创】年化123%最大回撤14%涨停弱转强竞价战法.txt,21 【原创】年化123%最大回撤14%涨停弱转强竞价战法.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/21 以“网红”ETF轮动为例.txt,21 以“网红”ETF轮动为例.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/21 北向资金股票轮动-优质策略可直接实盘.txt,21 北向资金股票轮动-优质策略可直接实盘.txt,J_量化择时_指标_复现,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/21 行业ETF轮动+择时，15年至今年化收益35%，回撤16%.txt,21 行业ETF轮动+择时，15年至今年化收益35%，回撤16%.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/22 “开弓”ETF轮动模型——改.txt,22 “开弓”ETF轮动模型——改.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/22 带上止损的核心资产轮动才更安心，低回撤，高收益率.txt,22 带上止损的核心资产轮动才更安心，低回撤，高收益率.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/22 截止到21年12月依然有效的小市值适配因子.txt,22 截止到21年12月依然有效的小市值适配因子.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/22 菜场大妈选股法.txt,22 菜场大妈选股法.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/22 菜场大妈高质低价法策略.txt,22 菜场大妈高质低价法策略.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/23 wywy1995大神机器学习策略年化提升版.txt,23 wywy1995大神机器学习策略年化提升版.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/23 低价小盘简单有效.txt,23 低价小盘简单有效.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/23 大盘择时，逻辑简单.txt,23 大盘择时，逻辑简单.txt,X_防御ST抄底低回撤,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/23 简单到发指的股指策略(2013到现在收益10949%).txt,23 简单到发指的股指策略(2013到现在收益10949%).txt,N_CTA期货股指套利,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/24 低AH溢价选股.txt,24 低AH溢价选股.txt,V_北向聪明钱基金抱团,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/24 多因子线性回归组合策略.txt,24 多因子线性回归组合策略.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/24 大容量低回撤价值投资-排除小市值因子.txt,24 大容量低回撤价值投资-排除小市值因子.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/24 宽基ETF动量轮动钝化RSRS择时-回撤小.txt,24 宽基ETF动量轮动钝化RSRS择时-回撤小.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/24 现在便宜的300就是最好的，收益惊人.txt,24 现在便宜的300就是最好的，收益惊人.txt,X_防御ST抄底低回撤,M_主策略_可独立alpha,04_危机位_危机模式,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/25 ROE-PB模型的优化.txt,25 ROE-PB模型的优化.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/25 低价股优化，18年至今10625.40%，加入防未来函数.txt,25 低价股优化，18年至今10625.40%，加入防未来函数.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/25 冷饭热吃之三，14年至今年华99.99%.txt,25 冷饭热吃之三，14年至今年华99.99%.txt,W2_主观作业分享实盘,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/25 基本不耍六毛的ETF轮动策略.txt,25 基本不耍六毛的ETF轮动策略.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/25 年初至今4倍，极致的Day Trading，56.8%胜率.txt,25 年初至今4倍，极致的Day Trading，56.8%胜率.txt,W_短线超短分钟级,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/26 【深度解析 六】高股息率-低PEG-低股价-市值序列模型.txt,26 【深度解析 六】高股息率-低PEG-低股价-市值序列模型.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/26 波动率过滤后相关性最小etf轮动.txt,26 波动率过滤后相关性最小etf轮动.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/26 稳定高回报周期股策略2.txt,26 稳定高回报周期股策略2.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/26 近几年一直有效的股票BOLL择时策略.txt,26 近几年一直有效的股票BOLL择时策略.txt,S_经典技术指标择时,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/26 这个可入得了你们法眼.txt,26 这个可入得了你们法眼.txt,W2_主观作业分享实盘,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/27 中证500指增+CTA，胜率52%盈亏比1.9。不输顶尖私募.txt,27 中证500指增+CTA，胜率52%盈亏比1.9。不输顶尖私募.txt,N_CTA期货股指套利,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/27 人工智能强化学习DQN交易智能体（回馈社区公开训练代码）.txt,27 人工智能强化学习DQN交易智能体（回馈社区公开训练代码）.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/27 基于RSRS的趋势交易与网格交易相结合的尝试.txt,27 基于RSRS的趋势交易与网格交易相结合的尝试.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/27 根据动量模型切换大小盘板块选股策略.txt,27 根据动量模型切换大小盘板块选股策略.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/27 追涨大师（超额142）.txt,27 追涨大师（超额142）.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/28 XGBoost模型多因子策略分享.txt,28 XGBoost模型多因子策略分享.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/28 从相关系数角度探讨etf轮动高评分.txt,28 从相关系数角度探讨etf轮动高评分.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/28 正黄旗大妈策略V3.0修改版.txt,28 正黄旗大妈策略V3.0修改版.txt,R_正黄旗大妈,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/29 F_Score 选股，年化80%+.txt,29 F_Score 选股，年化80%+.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/29 北上资金（北向资金港资外资）因子分析与策略分享.txt,29 北上资金（北向资金港资外资）因子分析与策略分享.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/29 穿越牛熊2.0（非小市值）年化50%的cta策略.txt,29 穿越牛熊2.0（非小市值）年化50%的cta策略.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/29 高增长业绩股池小市值成长型策略.txt,29 高增长业绩股池小市值成长型策略.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/30 ETF宽基轮动修改版-1.0.txt,30 ETF宽基轮动修改版-1.0.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/30 【超跌反弹v1.0】3年2.3倍的超跌反弹小牛股.txt,30 【超跌反弹v1.0】3年2.3倍的超跌反弹小牛股.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/30 价值成长轮动策略.txt,30 价值成长轮动策略.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/30 挖掘特色估值体系因子，把握投资机会，年化150%+.txt,30 挖掘特色估值体系因子，把握投资机会，年化150%+.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/30 错杀反弹，掌握人性规律，开启投资新纪元.txt,30 错杀反弹，掌握人性规律，开启投资新纪元.txt,X_防御ST抄底低回撤,M_主策略_可独立alpha,04_危机位_危机模式,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/31 ETF核心资产轮动动量因子加RSRS择时每日策略.txt,31 ETF核心资产轮动动量因子加RSRS择时每日策略.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/31 RSRS择时+货币基金--6年8倍行业周期股策略.txt,31 RSRS择时+货币基金--6年8倍行业周期股策略.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/31 《趋势永存》持续16年跑赢大盘的真正靠谱策略.txt,31 《趋势永存》持续16年跑赢大盘的真正靠谱策略.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/31 蛇皮走位小市值策略V1.0.txt,31 蛇皮走位小市值策略V1.0.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/31 跟着基金报团！！！174%  回撤  7.33%.txt,31 跟着基金报团！！！174%  回撤  7.33%.txt,V_北向聪明钱基金抱团,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/32 EPO优化低相关etf组合.txt,32 EPO优化低相关etf组合.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/32 北向Boll带_ETF组合宝付费策略.txt,32 北向Boll带_ETF组合宝付费策略.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/32 北向资金A股择时策略（5年16倍）.txt,32 北向资金A股择时策略（5年16倍）.txt,J_量化择时_指标_复现,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+"/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/32 追高概率涨停策略, 2022年化350%.txt","32 追高概率涨停策略, 2022年化350%.txt",D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/32 非线性关系市值（不是小市值）4只绩优股组合.txt,32 非线性关系市值（不是小市值）4只绩优股组合.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/33 alpha191短周期价量特征因子选股，年化46.77.txt,33 alpha191短周期价量特征因子选股，年化46.77.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/33 回馈社区顺便搞积分《一个完整的机器学习pipeline》.txt,33 回馈社区顺便搞积分《一个完整的机器学习pipeline》.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/33 最适合上班族的策略-神奇公式策略.txt,33 最适合上班族的策略-神奇公式策略.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,02_卫星位_主动alpha,C_慎用_依赖手工,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/33 胜率88.9%之君正集团策略-大阳分歧反包.txt,33 胜率88.9%之君正集团策略-大阳分歧反包.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/34 【回撤二波2.0】透过一次过拟合的机器学习摸底策略的收益上限.txt,34 【回撤二波2.0】透过一次过拟合的机器学习摸底策略的收益上限.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/34 十年回测 年化103.32% 最大回撤23.89%.txt,34 十年回测 年化103.32% 最大回撤23.89%.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/34 趋势交易5.0 无择时-2年5倍不是梦.txt,34 趋势交易5.0 无择时-2年5倍不是梦.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+"/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/35 【菜场大妈】股息率小市值策略,10年206倍,5年10.8倍.txt","35 【菜场大妈】股息率小市值策略,10年206倍,5年10.8倍.txt",A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/35 小市值市场轮动版 5年12倍.txt,35 小市值市场轮动版 5年12倍.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/35 精选价值策略.txt,35 精选价值策略.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/35 自适应量化终极算法2.0 （全新升级）.txt,35 自适应量化终极算法2.0 （全新升级）.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/35 超稳+翻倍，贝塔值只有0.048的期指策略.txt,35 超稳+翻倍，贝塔值只有0.048的期指策略.txt,I_多资产_股债_全天候,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+"/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/36 【菜场大妈】股息率小市值策略,10年206倍,5年10.8倍.txt","36 【菜场大妈】股息率小市值策略,10年206倍,5年10.8倍.txt",A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/36 快过年了。不想呆在小市值的，可以拿这个策略躲一躲.txt,36 快过年了。不想呆在小市值的，可以拿这个策略躲一躲.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/36 最简强者恒强策略.txt,36 最简强者恒强策略.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/36 致敬市场(6) ，指数期货贴水.txt,36 致敬市场(6) ，指数期货贴水.txt,M_致敬市场研报系列,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/37 PEG+EBIT对小市值因子的优化.txt,37 PEG+EBIT对小市值因子的优化.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/37 三阳三阴战法.txt,37 三阳三阴战法.txt,S_经典技术指标择时,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/37 微盘股扩散指数双均线择时.txt,37 微盘股扩散指数双均线择时.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/37 择时模块加风控的实际效果.txt,37 择时模块加风控的实际效果.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/38 ETF动量轮动RSRS择时-魔改3-北向资金择时-再优化.txt,38 ETF动量轮动RSRS择时-魔改3-北向资金择时-再优化.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/38 ETF动量轮动RSRS择时-魔改4-低通滤波.txt,38 ETF动量轮动RSRS择时-魔改4-低通滤波.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/38 ETF策略之核心资产轮动（线性增加权重）.txt,38 ETF策略之核心资产轮动（线性增加权重）.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/38 【回顾3】ETF策略之核心资产轮动-增强版.txt,38 【回顾3】ETF策略之核心资产轮动-增强版.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/39 多因子策略（多元线性回归）.txt,39 多因子策略（多元线性回归）.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/39 大资金强基本面优质股组合策略 收益1217% 无小市值因子.txt,39 大资金强基本面优质股组合策略 收益1217% 无小市值因子.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/39 干积分-大小盘反复横跳V2.0.txt,39 干积分-大小盘反复横跳V2.0.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/39 绩优小市值量化君也-模拟交易年化333.75%.txt,39 绩优小市值量化君也-模拟交易年化333.75%.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/39 随机森林策略，低换手率，年化近50%.txt,39 随机森林策略，低换手率，年化近50%.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/40 RSI学习贴.txt,40 RSI学习贴.txt,S_经典技术指标择时,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/40 低风险高收益的期货策略.txt,40 低风险高收益的期货策略.txt,N_CTA期货股指套利,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/40 穿越牛熊 稳健高收益 年化37.txt,40 穿越牛熊 稳健高收益 年化37.txt,J_量化择时_指标_复现,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/40 高股息策略.txt,40 高股息策略.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/41 SVR机器学习上证综指择时中小板财务选股策略.txt,41 SVR机器学习上证综指择时中小板财务选股策略.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/41 人工智能强化学习DQN交易智能体策略.txt,41 人工智能强化学习DQN交易智能体策略.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/41 再改进可实盘-默默赚钱系列-风险控制-增强版本-V5.0.txt,41 再改进可实盘-默默赚钱系列-风险控制-增强版本-V5.0.txt,P_苦咖啡默默赚钱,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/41 均线黏合，突破前三十个交易日最高点选股法.txt,41 均线黏合，突破前三十个交易日最高点选股法.txt,H_趋势_缠论_形态_K线,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/42 国九条：三年分红5千万以下且占净利润30%以下将被ST.txt,42 国九条：三年分红5千万以下且占净利润30%以下将被ST.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/42 大盘ETF动量轮动 RSRS择时策略-无纳指（5年半861%）.txt,42 大盘ETF动量轮动 RSRS择时策略-无纳指（5年半861%）.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/42 实盘出现的问题和解决办法.txt,42 实盘出现的问题和解决办法.txt,W2_主观作业分享实盘,F_框架工具_实盘基础设施,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/42 市值，研发支出，roe，三因子，跑赢大盘.txt,42 市值，研发支出，roe，三因子，跑赢大盘.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/43 小市值再优化【年化98% 胜率69% 回撤27%】无未来函数.txt,43 小市值再优化【年化98% 胜率69% 回撤27%】无未来函数.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/43 窄基ETF轮动：年化收益82.68%，最大回撤13.54%.txt,43 窄基ETF轮动：年化收益82.68%，最大回撤13.54%.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/44 兼顾业绩增长和PEG指标的5因子股票策略.txt,44 兼顾业绩增长和PEG指标的5因子股票策略.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/44 国九条 年化130.74% 回撤11% 众神Debug版.txt,44 国九条 年化130.74% 回撤11% 众神Debug版.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/44 最易上手的网格策略v2.0，设置几个参数就可以直接使用.txt,44 最易上手的网格策略v2.0，设置几个参数就可以直接使用.txt,H_趋势_缠论_形态_K线,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/44 集合竞价摸奖策略1.0-致敬2022.txt,44 集合竞价摸奖策略1.0-致敬2022.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+"/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/45 价值投资+期货对冲V4.0,无惧市场大跌.txt","45 价值投资+期货对冲V4.0,无惧市场大跌.txt",N_CTA期货股指套利,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/45 此消彼长.txt,45 此消彼长.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/45 海龟突破系统，19-21年化150，无未来函数和过拟合.txt,45 海龟突破系统，19-21年化150，无未来函数和过拟合.txt,S_经典技术指标择时,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/45 真真正正的诚意之作-2021超十倍.txt,45 真真正正的诚意之作-2021超十倍.txt,Y_研报深度解析复现,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/46 【深度解析 四】聚宽三因子基本面周线模型策略.txt,46 【深度解析 四】聚宽三因子基本面周线模型策略.txt,Y_研报深度解析复现,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/46 大盘股也能穿越牛熊市.txt,46 大盘股也能穿越牛熊市.txt,J_量化择时_指标_复现,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/46 敢于直接实盘的—八仙过海V2.txt,46 敢于直接实盘的—八仙过海V2.txt,J_量化择时_指标_复现,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/46 高增股池小市值轮动.txt,46 高增股池小市值轮动.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/47 别人恐惧我贪婪——重视大盘择时.txt,47 别人恐惧我贪婪——重视大盘择时.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/47 多策略整合大E小十年百倍（年化64%回撤28%）.txt,47 多策略整合大E小十年百倍（年化64%回撤28%）.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/47 年化46%的北向资金+20日涨幅的创业板策略.txt,47 年化46%的北向资金+20日涨幅的创业板策略.txt,J_量化择时_指标_复现,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/47 随机森林量价多因子选股短线交易机器学习.txt,47 随机森林量价多因子选股短线交易机器学习.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/47 高收益低回撤的小市值策略.txt,47 高收益低回撤的小市值策略.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/48 一种宏观数据的中长线策略，年化15%，最大回撤9%.txt,48 一种宏观数据的中长线策略，年化15%，最大回撤9%.txt,Y_研报深度解析复现,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/48 动量ETF轮动-RSRS择时-卡尔曼滤波.txt,48 动量ETF轮动-RSRS择时-卡尔曼滤波.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/48 投资回报率ROIC中等市值.txt,48 投资回报率ROIC中等市值.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/49 【漂亮50 2.0止损版本】为了降低回撤，加入择时止损模块.txt,49 【漂亮50 2.0止损版本】为了降低回撤，加入择时止损模块.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,A_首选,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/49 修改成一创版本.txt,49 修改成一创版本.txt,Q_一创系列,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/49 动量策略年化62%.txt,49 动量策略年化62%.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/49 干货贴《机器学习5折保形回归》.py,49 干货贴《机器学习5折保形回归》.py,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/49 干货贴《机器学习5折保形回归挂模拟回测.py,49 干货贴《机器学习5折保形回归挂模拟回测.py,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/49 根据北上资金买股票的最佳持股时间探讨.txt,49 根据北上资金买股票的最佳持股时间探讨.txt,J_量化择时_指标_复现,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/50 ETF动量轮动RSRS择时-V2.1.txt,50 ETF动量轮动RSRS择时-V2.1.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/50 【7日趋势】短线交易策略.txt,50 【7日趋势】短线交易策略.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/50 分享一种K线小碎步后突破的分钟级打法.txt,50 分享一种K线小碎步后突破的分钟级打法.txt,W_短线超短分钟级,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/50 基本面策略，一种新思路，超额376%.txt,50 基本面策略，一种新思路，超额376%.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/50 昨日炸板股策略.txt,50 昨日炸板股策略.txt,W_短线超短分钟级,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/51 北上资金持股比选股策略（北向港资外资）.txt,51 北上资金持股比选股策略（北向港资外资）.txt,J_量化择时_指标_复现,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/51 缠论交易策略.txt,51 缠论交易策略.txt,H_趋势_缠论_形态_K线,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/51 行业反转效应（年化32%，回撤8%）.txt,51 行业反转效应（年化32%，回撤8%）.txt,G_行业轮动_主题_概念,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/52 机器学习滚动训练价投策略.txt,52 机器学习滚动训练价投策略.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/52 根据北上资金买A股策略Python3版（北向港资外资）.txt,52 根据北上资金买A股策略Python3版（北向港资外资）.txt,J_量化择时_指标_复现,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/52 龙头战法之单阳不破.txt,52 龙头战法之单阳不破.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+"/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/53 TSmall-100, 微盘三正.txt","53 TSmall-100, 微盘三正.txt",A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/53 基于大盘PE标准差偏离度的聪明基金定投策略.txt,53 基于大盘PE标准差偏离度的聪明基金定投策略.txt,V_北向聪明钱基金抱团,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/53 微盘股400每日轮动再平衡.txt,53 微盘股400每日轮动再平衡.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/53 筹码选股.txt,53 筹码选股.txt,X_防御ST抄底低回撤,M_主策略_可独立alpha,04_危机位_危机模式,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/53 超跌网格交易大法V1.2：稳健跑赢大盘-年化13%回撤7%.txt,53 超跌网格交易大法V1.2：稳健跑赢大盘-年化13%回撤7%.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/54 sales_growth今年最优版.txt,54 sales_growth今年最优版.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/54 价值投资策略-大盘择时.txt,54 价值投资策略-大盘择时.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/54 养花大哥 追市场热点策略.txt,54 养花大哥 追市场热点策略.txt,G_行业轮动_主题_概念,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/54 发一个学习策略5年70倍，思路可以学习.txt,54 发一个学习策略5年70倍，思路可以学习.txt,W2_主观作业分享实盘,M_主策略_可独立alpha,05_增强位_主观特色,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/55 ETF轮动策略-入门1.0.txt,55 ETF轮动策略-入门1.0.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/55 价值投资改进版-6年9.5倍.txt,55 价值投资改进版-6年9.5倍.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/55 大市值价值投资加自定义邮箱推送 Ahfu.txt,55 大市值价值投资加自定义邮箱推送 Ahfu.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/55 怎么让龟速变奔跑？以“首版突破一进二”为例.txt,55 怎么让龟速变奔跑？以“首版突破一进二”为例.txt,W_短线超短分钟级,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/56 一创PEG+EBIT+turnover_volatility.txt,56 一创PEG+EBIT+turnover_volatility.txt,Q_一创系列,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/56 分享券商金股组合增强.txt,56 分享券商金股组合增强.txt,V_北向聪明钱基金抱团,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/56 双人工智能AI配合，样本外夏普3.9.txt,56 双人工智能AI配合，样本外夏普3.9.txt,Y_研报深度解析复现,R_研究素材_复现与因子,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/56 基于趋势、拥挤、景气的行业轮动，及行业强势个股的选择.txt,56 基于趋势、拥挤、景气的行业轮动，及行业强势个股的选择.txt,G_行业轮动_主题_概念,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/56 大盘一路向上时，追总龙头2个月3倍.txt,56 大盘一路向上时，追总龙头2个月3倍.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/57 别人恐惧我贪婪3——年化20%的股债组合.txt,57 别人恐惧我贪婪3——年化20%的股债组合.txt,I_多资产_股债_全天候,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/57 股指期货套利，这段时间都没有交易分享给大家.txt,57 股指期货套利，这段时间都没有交易分享给大家.txt,N_CTA期货股指套利,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/58 Debug-输出信息-多标的版ETF策略(ETF复现之三）.txt,58 Debug-输出信息-多标的版ETF策略(ETF复现之三）.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/58 ETF动量轮动RSRS与北上择时-股债平衡-盘中止损.txt,58 ETF动量轮动RSRS与北上择时-股债平衡-盘中止损.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/58 严格资金管理，股指期货套利.txt,58 严格资金管理，股指期货套利.txt,N_CTA期货股指套利,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+"/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/58 融券做空,3年35倍多！已模拟2年半，动态跑盘收益惊人！.txt","58 融券做空,3年35倍多！已模拟2年半，动态跑盘收益惊人！.txt",N_CTA期货股指套利,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/59 北向RSRS与布林带择时.txt,59 北向RSRS与布林带择时.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/59 年化62%的动量策略.txt,59 年化62%的动量策略.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/59 追板策略，今年收益已翻倍，低操作低回撤高收益可实盘.txt,59 追板策略，今年收益已翻倍，低操作低回撤高收益可实盘.txt,I_多资产_股债_全天候,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/60 ETF动量轮动RSRS择时-v2.txt,60 ETF动量轮动RSRS择时-v2.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/60 【深度解析 二】资产负债与ROA模型 5股.txt,60 【深度解析 二】资产负债与ROA模型 5股.txt,Y_研报深度解析复现,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/60 高股息V1.0（小程序公开股池）.txt,60 高股息V1.0（小程序公开股池）.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/61 BiLSTM for ETF.txt,61 BiLSTM for ETF.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/61 扩散指标择时.txt,61 扩散指标择时.txt,S_经典技术指标择时,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/61 抄底神器2.0，低回撤，高成功率.txt,61 抄底神器2.0，低回撤，高成功率.txt,X_防御ST抄底低回撤,M_主策略_可独立alpha,04_危机位_危机模式,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/61 简单ETF策略，年化97%.txt,61 简单ETF策略，年化97%.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/62 分享一个最近两年非常有效的因子.txt,62 分享一个最近两年非常有效的因子.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/62 北向资金交易能力一定强吗.txt,62 北向资金交易能力一定强吗.txt,J_量化择时_指标_复现,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/62 基金溢价（模拟效果好！）.txt,62 基金溢价（模拟效果好！）.txt,N_CTA期货股指套利,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/63 3年复合200+%收益+超低回撤11%以内，无惧大跌.txt,63 3年复合200+%收益+超低回撤11%以内，无惧大跌.txt,X_防御ST抄底低回撤,M_主策略_可独立alpha,04_危机位_危机模式,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/63 5年12倍-小市值.txt,63 5年12倍-小市值.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/63 怎么让龟速变奔跑？以“首版突破一进二”为例.txt,63 怎么让龟速变奔跑？以“首版突破一进二”为例.txt,W_短线超短分钟级,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/63 生猪期货CTA策略.txt,63 生猪期货CTA策略.txt,N_CTA期货股指套利,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/64 ETF轮动策略升级-增加盘中止损.txt,64 ETF轮动策略升级-增加盘中止损.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/64 基于XGBoost_6m滚动选股全A小市值开板止盈策略.txt,64 基于XGBoost_6m滚动选股全A小市值开板止盈策略.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/64 大小外择时小市值3.0.txt,64 大小外择时小市值3.0.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/65 低开买入小市值策略高频交易法3.0 总结.txt,65 低开买入小市值策略高频交易法3.0 总结.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/65 多因子指数增强.txt,65 多因子指数增强.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/65 搭建量化交易模型从零开始——择时，选股，仓位管理和因子分析.txt,65 搭建量化交易模型从零开始——择时，选股，仓位管理和因子分析.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/65 神级策略：桥水全天候策略-7年最大回撤仅3.5%.txt,65 神级策略：桥水全天候策略-7年最大回撤仅3.5%.txt,I_多资产_股债_全天候,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/66 ETF动量轮动MA乖离择时.txt,66 ETF动量轮动MA乖离择时.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/66 PB-POE+双均线--加入jq以来第一个成功的交易策略.txt,66 PB-POE+双均线--加入jq以来第一个成功的交易策略.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/66 SVR机器学习上证综指择时中小板财务选股策略.txt,66 SVR机器学习上证综指择时中小板财务选股策略.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/67 RSRS择时改进-【成交量加权-钝化-右偏】.txt,67 RSRS择时改进-【成交量加权-钝化-右偏】.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/67 三因子策略年化21%简单多因子策略框架.txt,67 三因子策略年化21%简单多因子策略框架.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/67 基于动量和反转效应的沪深300成分股策略.txt,67 基于动量和反转效应的沪深300成分股策略.txt,G_行业轮动_主题_概念,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/67 大市值价投高股息爱国者策略（爱我中华）.txt,67 大市值价投高股息爱国者策略（爱我中华）.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/68 wywy1995 首板低开策略代码优化，提快速度.txt,68 wywy1995 首板低开策略代码优化，提快速度.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/68 折价基金统计套利.txt,68 折价基金统计套利.txt,N_CTA期货股指套利,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/68 胜率78%，6年36倍，今年行情依然50%年化.txt,68 胜率78%，6年36倍，今年行情依然50%年化.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/68 说说对ETF轮动策略的看法.txt,68 说说对ETF轮动策略的看法.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/69 人工智能早晨十字星模型（反转形态预测）.txt,69 人工智能早晨十字星模型（反转形态预测）.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/69 场内基金定投价值平均增强策略，年化30%+.txt,69 场内基金定投价值平均增强策略，年化30%+.txt,V_北向聪明钱基金抱团,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/69 宽基BBI动量追涨完美避开这波大跌.txt,69 宽基BBI动量追涨完美避开这波大跌.txt,S_经典技术指标择时,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/69 神虽顶底+趋势.txt,69 神虽顶底+趋势.txt,S_经典技术指标择时,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/70 上涨股策略2020年收益123%.txt,70 上涨股策略2020年收益123%.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/70 动态保形回归小市值策略改进.txt,70 动态保形回归小市值策略改进.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/70 致敬市场(12)——赚钱的策略.txt,70 致敬市场(12)——赚钱的策略.txt,M_致敬市场研报系列,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/70 超稳的股息率+均线选股策略.txt,70 超稳的股息率+均线选股策略.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/70 （股票交易模板）小市值-EPS-成长因子选股.txt,70 （股票交易模板）小市值-EPS-成长因子选股.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/71 【股指策略】【研报复现】周内与日内结合CTA.txt,71 【股指策略】【研报复现】周内与日内结合CTA.txt,H_趋势_缠论_形态_K线,R_研究素材_复现与因子,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/71 回踩均线搏反弹，21年来70%..txt,71 回踩均线搏反弹，21年来70%..txt,X_防御ST抄底低回撤,M_主策略_可独立alpha,04_危机位_危机模式,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/71 多因子模板分位法策略，年化65%.txt,71 多因子模板分位法策略，年化65%.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/71 期货日内策略三价均线结合ATR指标.txt,71 期货日内策略三价均线结合ATR指标.txt,H_趋势_缠论_形态_K线,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/71 （乱改一版）股票加“钱粮”ETF组合.txt,71 （乱改一版）股票加“钱粮”ETF组合.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/72 【回撤二波2.0】透过一次过拟合的机器学习摸底策略的收益上限.txt,72 【回撤二波2.0】透过一次过拟合的机器学习摸底策略的收益上限.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/72 【股指期货】收盘折溢价策略.txt,72 【股指期货】收盘折溢价策略.txt,N_CTA期货股指套利,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/72 桥水 全天候策略 增加一致性度量ES 风险控制.txt,72 桥水 全天候策略 增加一致性度量ES 风险控制.txt,I_多资产_股债_全天候,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/72 随机森林 - 多因子模型.txt,72 随机森林 - 多因子模型.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/73 基于期权PCR与标的波动率价差的股指期货套利.txt,73 基于期权PCR与标的波动率价差的股指期货套利.txt,N_CTA期货股指套利,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/73 实现净利润跳空策略.txt,73 实现净利润跳空策略.txt,X_防御ST抄底低回撤,M_主策略_可独立alpha,04_危机位_危机模式,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/73 微盘400每日再平衡.txt,73 微盘400每日再平衡.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/73 稳健趋势策略回测小，无未来函数.txt,73 稳健趋势策略回测小，无未来函数.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/74 MACD多周期共振，精准打击！.txt,74 MACD多周期共振，精准打击！.txt,S_经典技术指标择时,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/74 【动量应用V1】12年120倍，根据研报思路调整.txt,74 【动量应用V1】12年120倍，根据研报思路调整.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/74 主观辅助_形态识别_单边上涨策略优化v3.txt,74 主观辅助_形态识别_单边上涨策略优化v3.txt,D_打板_龙头_涨停_首板_短线,A_辅助模块_择时或选股器,,C_慎用_依赖手工,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/74 趋势筛选后相关性最小etf轮动.txt,74 趋势筛选后相关性最小etf轮动.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/74 迪马克TD趋势反转指标.txt,74 迪马克TD趋势反转指标.txt,S_经典技术指标择时,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/75 ETF轮动策略-入门2.0.txt,75 ETF轮动策略-入门2.0.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/75 勾股神器2，代码40行，年化一百点。.txt,75 勾股神器2，代码40行，年化一百点。.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/75 大市值价值投资优化一波.txt,75 大市值价值投资优化一波.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/75 最近2年年化100%以上回撤12%的打板策略-验证策略.txt,75 最近2年年化100%以上回撤12%的打板策略-验证策略.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/76 ETF-控制回撤性能拉满（国债ETF增强）.txt,76 ETF-控制回撤性能拉满（国债ETF增强）.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/76 ETF基金溢价高收益低回测策略 改进版.txt,76 ETF基金溢价高收益低回测策略 改进版.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/76 小市值止损策略【年化104.11% 最大回撤30.65%】.txt,76 小市值止损策略【年化104.11% 最大回撤30.65%】.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/76 日内交易策略R-breaker.txt,76 日内交易策略R-breaker.txt,H_趋势_缠论_形态_K线,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/76 机器学习策略分享.txt,76 机器学习策略分享.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/77 研报三因子II-新规高分红小市值-年化60回撤19.txt,77 研报三因子II-新规高分红小市值-年化60回撤19.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/77 致敬市场（2）——随机选股.txt,77 致敬市场（2）——随机选股.txt,M_致敬市场研报系列,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/77 超强单因子策略（EBITEV）.txt,77 超强单因子策略（EBITEV）.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/77 龙头弱转强战法.txt,77 龙头弱转强战法.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/78 ffscore选股加rsrs择时.txt,78 ffscore选股加rsrs择时.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/78 【基金增强思考2.0】优秀基金的持续性与周期的关系密不可分.txt,78 【基金增强思考2.0】优秀基金的持续性与周期的关系密不可分.txt,V_北向聪明钱基金抱团,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/78 国盛多因子系列选股体系和基于Lasso的收益预测模型策略（9大类共59个因子）.txt,78 国盛多因子系列选股体系和基于Lasso的收益预测模型策略（9大类共59个因子）.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/78 首板低开策略-终极版 最大回撤15%，年化50%.txt,78 首板低开策略-终极版 最大回撤15%，年化50%.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/79 EPS+MS因子的大盘蓝筹策略.txt,79 EPS+MS因子的大盘蓝筹策略.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/79 【多因子选股模型框架】(单因子各项指标评分细则).txt,79 【多因子选股模型框架】(单因子各项指标评分细则).txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/79 南澳 SVR选股的小市值策略.txt,79 南澳 SVR选股的小市值策略.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/79 南澳推荐配套的随机森林选股的小市值策略.txt,79 南澳推荐配套的随机森林选股的小市值策略.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/79 国九条-新的红利因子，修正「审计意见」函数.txt,79 国九条-新的红利因子，修正「审计意见」函数.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/79 实盘一周50%的妖股探测器.txt,79 实盘一周50%的妖股探测器.txt,W_短线超短分钟级,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/80 公募基金抱团.txt,80 公募基金抱团.txt,V_北向聪明钱基金抱团,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/80 基本面01加RSI择时.txt,80 基本面01加RSI择时.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/80 短线策略-2022年两个半月收益45%-无未来函数.txt,80 短线策略-2022年两个半月收益45%-无未来函数.txt,W_短线超短分钟级,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/80 过滤两个因子，12年15倍的roa选股500指数增强.txt,80 过滤两个因子，12年15倍的roa选股500指数增强.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/81 低PB小市值低换手策略总结.txt,81 低PB小市值低换手策略总结.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/81 搞市场最靓的仔！指数ETF动量轮动策略-2.txt,81 搞市场最靓的仔！指数ETF动量轮动策略-2.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/81 无杠杆，稳定盈利的etf轮动.txt,81 无杠杆，稳定盈利的etf轮动.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/82 低频，带基本面优化，带风控的，实盘模拟的小盘股策略.txt,82 低频，带基本面优化，带风控的，实盘模拟的小盘股策略.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/82 回报社区——基于Gyro老师策略的思考.txt,82 回报社区——基于Gyro老师策略的思考.txt,U_基本面价值价投单因子,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/82 无需先验知识，动态选择的etf轮动策略，更具鲁棒性.txt,82 无需先验知识，动态选择的etf轮动策略，更具鲁棒性.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/83 回测“一创模拟盘2号”，最终改造优化，年化39%.txt,83 回测“一创模拟盘2号”，最终改造优化，年化39%.txt,Q_一创系列,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/83 大小外择时小市值.txt,83 大小外择时小市值.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/83 开盘幅度决定日内方向.txt,83 开盘幅度决定日内方向.txt,H_趋势_缠论_形态_K线,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/84 ETF网格交易策略.txt,84 ETF网格交易策略.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/84 正黄旗大妈选股改进-加入涨停卖出后的买入，提高资金利用率.txt,84 正黄旗大妈选股改进-加入涨停卖出后的买入，提高资金利用率.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/85 【深度解析 七】BBI指标-大盘涨跌-宽基轮动 模型.txt,85 【深度解析 七】BBI指标-大盘涨跌-宽基轮动 模型.txt,S_经典技术指标择时,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/85 价值策略重开，再次向Jqz1226致敬.txt,85 价值策略重开，再次向Jqz1226致敬.txt,M_致敬市场研报系列,M_主策略_可独立alpha,05_增强位_主观特色,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/85 易方达中小盘（魔改版）.txt,85 易方达中小盘（魔改版）.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/85 稳健型ETF策略.txt,85 稳健型ETF策略.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/85 致敬市场(1)，探讨指数化策略投资.txt,85 致敬市场(1)，探讨指数化策略投资.txt,M_致敬市场研报系列,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/86 北上詹姆斯.txt,86 北上詹姆斯.txt,V_北向聪明钱基金抱团,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/86 最新解密--追涨龙头打板策略.txt,86 最新解密--追涨龙头打板策略.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/86 预判st并过滤避雷代码 740（50只）.txt,86 预判st并过滤避雷代码 740（50只）.txt,X_防御ST抄底低回撤,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/87 北上净买入策略.txt,87 北上净买入策略.txt,V_北向聪明钱基金抱团,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/87 山寨每月轮动调仓的红利策略.txt,87 山寨每月轮动调仓的红利策略.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/87 山寨红利.txt,87 山寨红利.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/87 穿越牛熊基业长青的价值精选策略.txt,87 穿越牛熊基业长青的价值精选策略.txt,J_量化择时_指标_复现,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/88 WY大神的“龙头打板”策略小改.txt,88 WY大神的“龙头打板”策略小改.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/88 【股指期货】收盘折溢价策略.txt,88 【股指期货】收盘折溢价策略.txt,N_CTA期货股指套利,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/88 基于动量因子的ETF轮动加上RSRS择时.txt,88 基于动量因子的ETF轮动加上RSRS择时.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/88 打首板策略，今年收益达到40%，绝无未来函数.txt,88 打首板策略，今年收益达到40%，绝无未来函数.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/89 2020年效果很好的策略-龙回头策略v3.0.txt,89 2020年效果很好的策略-龙回头策略v3.0.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/89 年化收益55.7%， 超高胜率 0.799！.txt,89 年化收益55.7%， 超高胜率 0.799！.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/90 2019年到现在19倍的新策略.txt,90 2019年到现在19倍的新策略.txt,Y_研报深度解析复现,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/90 国债固收+.txt,90 国债固收+.txt,I_多资产_股债_全天候,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/90 大师策略——柯林·麦克连成长价值优势投资法.txt,90 大师策略——柯林·麦克连成长价值优势投资法.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/90 超稳+翻倍，贝塔值只有0.048的期指策略.txt,90 超稳+翻倍，贝塔值只有0.048的期指策略.txt,I_多资产_股债_全天候,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/91 ETF-T0动量策略，年化 18%，回撤3.31%.txt,91 ETF-T0动量策略，年化 18%，回撤3.31%.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/91 一个月轮动股票换仓，内日做T，相对高频交易.txt,91 一个月轮动股票换仓，内日做T，相对高频交易.txt,W_短线超短分钟级,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/91 欧奈尔 RPS选股战法回测b.txt,91 欧奈尔 RPS选股战法回测b.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,A_首选,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/92 敢于直接实盘的—八仙过海V2.txt,92 敢于直接实盘的—八仙过海V2.txt,J_量化择时_指标_复现,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/92 致敬市场--4 解析细节.txt,92 致敬市场--4 解析细节.txt,M_致敬市场研报系列,M_主策略_可独立alpha,05_增强位_主观特色,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/93 234板介入-2023年14倍-无未来.txt,93 234板介入-2023年14倍-无未来.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/93 【超跌反弹v1.0】3年2.3倍的超跌反弹小牛股.txt,93 【超跌反弹v1.0】3年2.3倍的超跌反弹小牛股.txt,A_小市值_微盘_国九条,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/93 北向Boll带_ETF组合宝付费策略.txt,93 北向Boll带_ETF组合宝付费策略.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/93 因子看板多因子模型---由量化课堂多因子模型修改.txt,93 因子看板多因子模型---由量化课堂多因子模型修改.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/94 别人“拿的住”的股票最赚钱.txt,94 别人“拿的住”的股票最赚钱.txt,W2_主观作业分享实盘,M_主策略_可独立alpha,05_增强位_主观特色,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/94 小资金短线策略.txt,94 小资金短线策略.txt,W_短线超短分钟级,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/94 布林线追龙头战法.txt,94 布林线追龙头战法.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/95 冲天炮最高板策略迭代.txt,95 冲天炮最高板策略迭代.txt,W_短线超短分钟级,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/95 学习贴《一个完整的-深度学习-神经网络pipeline》.txt,95 学习贴《一个完整的-深度学习-神经网络pipeline》.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/95 首席质量因子-Gross Profitabilit（简化版）.txt,95 首席质量因子-Gross Profitabilit（简化版）.txt,C_多因子_机器学习_AI,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/96 【复现】高频价量相关性，意想不到的选股因子.txt,96 【复现】高频价量相关性，意想不到的选股因子.txt,Y_研报深度解析复现,R_研究素材_复现与因子,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/96 集合竞价量比策略V1.txt,96 集合竞价量比策略V1.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/96 首版+2版龙虎榜挖掘V2.0，年化1400.txt,96 首版+2版龙虎榜挖掘V2.0，年化1400.txt,J_量化择时_指标_复现,A_辅助模块_择时或选股器,,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/97 稳定高回报周期股策略2-RSRS择时.txt,97 稳定高回报周期股策略2-RSRS择时.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/97 趋势筛选后相关性最小etf轮动-加速10倍版.txt,97 趋势筛选后相关性最小etf轮动-加速10倍版.txt,B_ETF_轮动_RSRS,M_主策略_可独立alpha,01_底仓位_跨周期稳,B_次选_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/98 【漂亮50】“漂亮50”策略复现以及股息率排序函数.txt,98 【漂亮50】“漂亮50”策略复现以及股息率排序函数.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,A_首选,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/98 追涨大师（超额142）.txt,98 追涨大师（超额142）.txt,T_动量趋势海龟强者恒强,M_主策略_可独立alpha,02_卫星位_主动alpha,B_可改造,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/99 欧奈尔CANSLIM策略初探三.txt,99 欧奈尔CANSLIM策略初探三.txt,E_高股息_价值_红利_低波,M_主策略_可独立alpha,01_底仓位_跨周期稳,A_首选,True,valid,executable,OK
+/Users/fengzhi/Downloads/git/testlixingren/jk2bt-main/strategies/99最新龙回头5.0速度优化版+风险控制版本.txt,99最新龙回头5.0速度优化版+风险控制版本.txt,D_打板_龙头_涨停_首板_短线,M_主策略_可独立alpha,03_进攻位_短线题材,B_次选_可改造,True,valid,executable,OK
