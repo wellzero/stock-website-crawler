@@ -469,9 +469,9 @@ class LixingerFundamentalParser {
 
   constructor(config = {}) {
     this.config = {
-      stockId: config.stockId || '600519',
-      baseUrl: config.baseUrl || 'https://www.lixinger.com/analytics/company/detail/sh/600519/600519',
-      fundamentalBase: config.fundamentalBase || 'https://www.lixinger.com/analytics/company/detail/sh/600519/600519/fundamental',
+      stockId: config.stockId || '',
+      baseUrl: config.baseUrl || '',
+      fundamentalBase: config.fundamentalBase || '',
       username: config.username || '13311390323',
       password: config.password || '3228552',
       loginUrl: config.loginUrl || 'https://www.lixinger.com/open/api/my-apis',
@@ -863,8 +863,11 @@ class LixingerFundamentalParser {
   buildFilename(url) {
     try {
       const u = new URL(url);
-      const parts = u.pathname.split('/').filter(p => p && !/^(sh|sz|bj|analytics|company|detail|\d+)$/.test(p));
-      return `${this.config.stockId}_${parts.join('_')}`;
+      // Extract stock code from URL path (e.g. /sh/603986/603986/fundamental/...)
+      const stockMatch = u.pathname.match(/\/(sh|sz|bj|hk)\/(\d+)/);
+      const stockCode = stockMatch ? stockMatch[2] : this.config.stockId;
+      const parts = u.pathname.split('/').filter(p => p && !/^(sh|sz|bj|hk|analytics|company|detail|\d+)$/.test(p));
+      return `${stockCode}_${parts.join('_')}`;
     } catch {
       return `${this.config.stockId}_data`;
     }
