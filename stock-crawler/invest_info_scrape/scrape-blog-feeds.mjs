@@ -11,13 +11,16 @@
  *
  * Config: conf.json (next to package.json by default, or pass a path as argv[2])
  *   {
- *     "outputDir":   "./output/blog-feeds",   // base dir; .md files go to outputDir/<YYYY-MM-DD>/
+ *     "outputDir":   "./output/blog-feeds",   // base dir; .md files go to outputDir/<YYYY-MM-DD>/raw/
  *     "userDataDir": "./chrome_user_data",    // Chrome profile with login cookies
  *     "hours":       24,                       // time window
  *     "headless":    true,
  *     "scrollTimes": 6,                        // xcancel: max timeline pages to fetch
  *     "scrollDelayMs": 2500,
  *     "proxy":       "http://127.0.0.1:4080",  // optional proxy for xcancel RSS requests
+ *     "xcancelDelayMs": 8000,                  // min delay between xcancel RSS requests (429 avoidance)
+ *     "rssMaxRetries": 4,                      // retries per feed on HTTP 429/503/network errors
+ *     "rssRetryBaseMs": 5000,                  // exponential backoff base for RSS retries
  *     "browserProxy": null,                    // optional proxy for the browser (xueqiu/weibo).
  *                                              // NOTE: do NOT route xueqiu through an overseas
  *                                              // proxy — its WAF serves a JS challenge instead
@@ -49,10 +52,14 @@ if (!fs.existsSync(configPath)) {
 }
 const conf = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
 
-const DATE = new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai' }).format(new Date()).replace(/\//g, '-');
+const DATE = new Intl.DateTimeFormat('zh-CN', {
+  timeZone: 'Asia/Shanghai',
+  year: 'numeric', month: '2-digit', day: '2-digit',
+}).format(new Date()).replace(/\//g, '-');
 const OUTPUT_DIR = path.join(
   path.resolve(path.dirname(configPath), conf.outputDir || './output/blog-feeds'),
-  DATE
+  DATE,
+  'raw'
 );
 const USER_DATA_DIR = conf.userDataDir ? path.resolve(path.dirname(configPath), conf.userDataDir) : null;
 const HOURS = conf.hours || 24;
@@ -189,6 +196,41 @@ async function fetchWeiboLongText(page, id) {
 // ---------------------------------------------------------------------------
 const RSS_UA = 'FreshRSS/1.24 (Linux; https://freshrss.org)';
 
+// Rate-limit handling: xcancel's RSS host returns HTTP 429 when feeds are
+// fetched back-to-back. Retry with exponential backoff (honoring Retry-After)
+// and pause between consecutive feed requests.
+const RSS_MAX_RETRIES = conf.rssMaxRetries ?? 4;
+const RSS_RETRY_BASE_MS = conf.rssRetryBaseMs ?? 5000;
+const XCANCEL_REQUEST_DELAY_MS = conf.xcancelDelayMs ?? 8000;
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function fetchRssWithRetry(req, url) {
+  for (let attempt = 0; attempt <= RSS_MAX_RETRIES; attempt++) {
+    let res;
+    try {
+      res = await req.get(url, { maxRedirects: 5, timeout: 60000 });
+    } catch (e) {
+      if (attempt === RSS_MAX_RETRIES) throw e;
+      const wait = RSS_RETRY_BASE_MS * 2 ** attempt;
+      console.warn(`  [retry] RSS fetch error (${e.message}); retrying in ${Math.round(wait / 1000)}s (${attempt + 1}/${RSS_MAX_RETRIES})`);
+      await sleep(wait);
+      continue;
+    }
+    if (res.status() === 429 || res.status() === 503) {
+      if (attempt === RSS_MAX_RETRIES) return res;
+      const retryAfter = Number(res.headers()['retry-after']);
+      const wait = Number.isFinite(retryAfter) && retryAfter > 0
+        ? retryAfter * 1000
+        : RSS_RETRY_BASE_MS * 2 ** attempt + Math.floor(Math.random() * 2000);
+      console.warn(`  [retry] HTTP ${res.status()} (rate limited); retrying in ${Math.round(wait / 1000)}s (${attempt + 1}/${RSS_MAX_RETRIES})`);
+      await sleep(wait);
+      continue;
+    }
+    return res;
+  }
+}
+
 function decodeEntities(s = '') {
   return s
     .replace(/&nbsp;/g, ' ')
@@ -217,12 +259,9 @@ async function scrapeXcancelRss(link, posts) {
   });
   let xml;
   try {
-    const res = await req.get(`https://xcancel.com/${username}/rss`, {
-      maxRedirects: 5,
-      timeout: 60000
-    });
+    const res = await fetchRssWithRetry(req, `https://xcancel.com/${username}/rss`);
     if (!res.ok()) {
-      console.error(`  [error] RSS fetch failed: HTTP ${res.status()}`);
+      console.error(`  [error] RSS fetch failed: HTTP ${res.status()} (after ${RSS_MAX_RETRIES} retries)`);
       return;
     }
     xml = await res.text();
@@ -449,8 +488,18 @@ async function main() {
   }
 
   const written = [];
+  let lastXcancelAt = 0;
   for (const link of LINKS) {
     try {
+      // Pace xcancel RSS requests to avoid HTTP 429 rate limiting.
+      if (classifyLink(link) === 'xcancel' && lastXcancelAt > 0) {
+        const wait = XCANCEL_REQUEST_DELAY_MS - (Date.now() - lastXcancelAt);
+        if (wait > 0) {
+          console.log(`  [wait] pacing xcancel requests, sleeping ${Math.round(wait / 1000)}s`);
+          await sleep(wait);
+        }
+      }
+      if (classifyLink(link) === 'xcancel') lastXcancelAt = Date.now();
       const result = await scrapeLink(context, link);
       if (result) written.push(writeMarkdown(result));
     } catch (e) {

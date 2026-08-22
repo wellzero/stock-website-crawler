@@ -1,6 +1,6 @@
 {
-  "outputDir": "./output/blog-feeds",
-  "userDataDir": "./chrome_user_data",
+  "outputDir": "/home/data/quant_free_data/html/invest_info/",
+  "userDataDir": "../chrome_user_data",
   "hours": 48,
   "headless": true,
   "scrollTimes": 6,
@@ -10,6 +10,7 @@
     "weibo.com": "SUB=_2A25Hhp8qDeThGeBN7FcY9yfPyjmIHXVk_Z7irDV8PUNbmtB-LVTHkW9NR_WH1YGFK4w8egP9WHqzy9SxiQg5hAa4; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5a6SK56PDmJFYoPY2v_Ayi5JpX5KzhUgL.Foq0S0-4S0.0eK-2dJLoIp7LxKML1KBLBKnLxKqL1hnLBoMce0Mf1KM4e02f"
   },
   "links": [
+
 "https://weibo.com/1249424622?tabtype=feed",
 "https://weibo.com/u/1592054367?tabtype=feed",
 "https://weibo.com/u/1905549057?tabtype=feed",
@@ -106,19 +107,7 @@
 "https://www.xueqiu.com/u/8186325164",
 
 "https://www.xueqiu.com/u/5251837622",
-"https://www.xueqiu.com/u/1281037846",
-"https://www.xueqiu.com/u/2698970317",
-"https://www.xueqiu.com/u/2797489711",
-"https://www.xueqiu.com/u/7869596452",
-"https://www.xueqiu.com/u/5860680613",
-"https://www.xueqiu.com/u/3719575298",
-"https://www.xueqiu.com/u/7221444849",
-"https://www.xueqiu.com/u/1469716014",
-"https://www.xueqiu.com/u/5203213461",
-"https://www.xueqiu.com/u/8746384087",
-"https://www.xueqiu.com/u/7043298511",
-"https://www.xueqiu.com/u/1458585072",
-"https://www.xueqiu.com/u/7005609044"
+"https://www.xueqiu.com/u/1281037846"
 
  ]
 }
