@@ -1,0 +1,102 @@
+{
+  "outputDir": "/home/quant_volumn/qf_invest_agent/aibubble/team-data/report/daily",
+  "outputSubDir": "news-raw",
+  "userDataDir": "../chrome_user_data",
+  "headless": true,
+  "proxy": "http://127.0.0.1:4080",
+  "defaultWaitMs": 6000,
+  "scrollTimes": 2,
+  "scrollDelayMs": 2000,
+  "maxChars": 40000,
+  "maxItems": 10,
+  "itemWaitMs": 3000,
+  "fetchUserAgent": "stock-website-crawler research (contact: wwellzero@gmail.com)",
+  "links": [
+    {
+      "name": "01_yahoo_finance_news",
+      "url": "https://finance.yahoo.com/news/",
+      "waitMs": 6000,
+      "scrapeItems": true,
+      "itemLinkPattern": "finance\\.yahoo\\.com/.*\\.html"
+    },
+    {
+      "name": "02_wsj_markets",
+      "url_bak": "https://cn.wsj.com/zh-hans/news/markets",
+      "url": "https://feeds.content.dowjones.io/public/rss/RSSMarketsMain",
+      "mode": "rss",
+      "scrapeItems": true
+    },
+    {
+      "name": "03_nytimes_china_tech",
+      "url": "https://m.cn.nytimes.com/technology",
+      "waitMs": 6000,
+      "scrapeItems": true,
+      "itemLinkPattern": "/20\\d{6}/"
+    },
+    {
+      "name": "04_investing_economic_calendar",
+      "url_bak": "https://www.investing.com/news/stock-market-news",
+      "url": "https://www.investing.com/rss/news_25.rss",
+      "mode": "rss",
+      "scrapeItems": true
+    },
+    {
+      "name": "05_etfdb_etf_flows",
+      "url_1": "https://www.etfdb.com/etf-information/",
+      "url": "https://www.etfchannel.com/staffarticles/",
+      "waitMs": 8000,
+      "blockedPattern": "Just a moment|请稍候|Attention Required|Access denied",
+      "fallbacks": ["https://www.etfchannel.com/"],
+      "scrapeItems": true
+    },
+    {
+      "name": "05b_etfdb_etf_finder",
+      "url_bak": "https://etfdb.com/news/",
+      "url": "https://etfdb.com/feed/",
+      "mode": "rss",
+      "scrapeItems": true
+    },
+    {
+      "name": "06_unusual_whales_flow",
+      "url_bak": "https://unusualwhales.com/flow/",
+      "url": "https://unusualwhales.com/news",
+      "waitMs": 8000,
+      "fallbacks": ["https://unusualwhales.com/", "https://www.barchart.com/options/unusual-activity/stocks"],
+      "scrapeItems": true
+    },
+    {
+      "name": "07_sec_edgar_form4_current",
+      "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=4&company=&dateb=&owner=include&count=40",
+      "mode": "fetch",
+      "fallbacks": ["http://openinsider.com/latest-insider-trading"]
+    },
+    {
+      "name": "07b_sec_edgar_s1",
+      "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=S-1&company=&dateb=&owner=include&count=40",
+      "mode": "fetch"
+    },
+    {
+      "name": "08_eastmoney_sector_flows",
+      "url": "https://data.eastmoney.com/bkzj/hy.html",
+      "waitMs": 10000,
+      "proxy": false
+    },
+    {
+      "name": "08b_eastmoney_northbound",
+      "url": "https://finance.eastmoney.com/",
+      "waitMs": 10000,
+      "proxy": false,
+      "scrapeItems": true,
+      "itemLinkPattern": "finance\\.eastmoney\\.com/(a|news)/.*20\\d{2}.*\\.html",
+      "itemWaitMs": 4000
+    },
+    {
+      "name": "08c_hkex_market_turnover",
+      "url_bak": "https://www.hkex.com.hk/Market-Data/Market-Statistics/Market-Turnover?sc_lang=zh-HK",
+      "url": "https://www.hkex.com.hk/chi/stat/smstat/dayquot/d{YYMMDD}c.htm",
+      "mode": "fetch",
+      "proxy": false,
+      "dateFallbackDays": 5
+    }
+  ]
+}

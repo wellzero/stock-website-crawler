@@ -17,6 +17,7 @@
     "bootstrap:hao123": "node scripts/bootstrap-hao123-sites.js",
     "test:all-hao123": "node scripts/test-all-hao123-sites.js",
     "scrape:blogs": "node invest_info_scrape/scrape-blog-feeds.mjs",
+    "scrape:news": "node news_scrape/scrape-news.mjs",
     "crawl:apify-google-finance": "node scripts/run-apify-google-finance-task.mjs"
   },
   "keywords": [
