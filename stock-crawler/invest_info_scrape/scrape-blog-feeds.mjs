@@ -9,6 +9,12 @@
  *   - weibo.com user feeds    (https://weibo.com/u/<uid>?tabtype=feed)
  *   - xcancel.com user pages  (https://xcancel.com/<username>, Nitter-style HTML)
  *
+ * NOTE: xcancel.com was suspended (HTTP 451) in Sept 2026 amid X's lawsuit
+ * against Nitter/XCancel. Twitter/X feeds are fetched from whichever Nitter
+ * instance in "nitterInstances" (conf.json) currently serves RSS; links in
+ * conf.json may keep using xcancel.com URLs — the username is extracted and
+ * replayed against each configured instance until one returns a valid feed.
+ *
  * Config: conf.json (next to package.json by default, or pass a path as argv[2])
  *   {
  *     "outputDir":   "./output/blog-feeds",   // base dir; .md files go to outputDir/<YYYY-MM-DD>/raw/
@@ -28,8 +34,13 @@
  *     "links":       [ "https://...", ... ]
  *   }
  *
- * NOTE: xueqiu/weibo require a logged-in Chrome profile. Run once with
- * "headless": false and log in manually if the profile has no valid cookies.
+ * NOTE: xueqiu/weibo require a logged-in Chrome profile. If the profile has
+ * no valid session, re-login with the QR helpers:
+ *   xvfb-run -a node invest_info_scrape/xueqiu-login.mjs
+ *   xvfb-run -a node invest_info_scrape/weibo-login.mjs
+ * (weibo's anonymous "visitor" cookies no longer work — a real login is
+ * required; conf.json "cookies" entries are only a fallback and do NOT
+ * overwrite cookies already present in the profile.)
  * xcancel.com is scraped via its RSS feed (no login, no browser); the HTML
  * pages sit behind an anti-bot challenge that headless Chrome cannot pass.
  */
@@ -106,6 +117,7 @@ function classifyLink(url) {
   if (/xueqiu\.com/.test(url)) return 'xueqiu';
   if (/weibo\.com/.test(url)) return 'weibo';
   if (/xcancel\.com/.test(url)) return 'xcancel';
+  if (NITTER_INSTANCES.some((h) => url.includes(h))) return 'xcancel';
   return null;
 }
 
@@ -189,12 +201,16 @@ async function fetchWeiboLongText(page, id) {
 }
 
 // ---------------------------------------------------------------------------
-// Xcancel (Nitter-style). The HTML pages sit behind an anti-bot challenge that
-// headless Chrome cannot pass, so we use the RSS feed instead:
-//   https://xcancel.com/<user>/rss  ->  https://rss.xcancel.com/<user>/rss
-// The RSS host only serves whitelisted RSS-reader User-Agents.
+// Xcancel / Nitter (Twitter mirrors). The HTML pages sit behind anti-bot
+// challenges headless Chrome cannot pass, so we use the RSS feed instead:
+//   https://<nitter-instance>/<user>/rss
+// xcancel.com itself was suspended in Sept 2026 (HTTP 451, X lawsuit), so we
+// try each configured instance in order until one returns a valid RSS doc.
 // ---------------------------------------------------------------------------
 const RSS_UA = 'FreshRSS/1.24 (Linux; https://freshrss.org)';
+
+// Hosts serving Nitter-style RSS, in failover order. First one wins.
+const NITTER_INSTANCES = conf.nitterInstances || ['nitter.jaydenha.uk'];
 
 // Rate-limit handling: xcancel's RSS host returns HTTP 429 when feeds are
 // fetched back-to-back. Retry with exponential backoff (honoring Retry-After)
@@ -205,13 +221,16 @@ const XCANCEL_REQUEST_DELAY_MS = conf.xcancelDelayMs ?? 8000;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-async function fetchRssWithRetry(req, url) {
+async function fetchRssWithRetry(req, url, { failFastOnNetworkError = false } = {}) {
   for (let attempt = 0; attempt <= RSS_MAX_RETRIES; attempt++) {
     let res;
     try {
       res = await req.get(url, { maxRedirects: 5, timeout: 60000 });
     } catch (e) {
-      if (attempt === RSS_MAX_RETRIES) throw e;
+      // With several nitter instances configured, a network-level failure
+      // (DNS/TLS/refused) means the instance is down — fail over instead of
+      // burning the full retry chain on it.
+      if (failFastOnNetworkError || attempt === RSS_MAX_RETRIES) throw e;
       const wait = RSS_RETRY_BASE_MS * 2 ** attempt;
       console.warn(`  [retry] RSS fetch error (${e.message}); retrying in ${Math.round(wait / 1000)}s (${attempt + 1}/${RSS_MAX_RETRIES})`);
       await sleep(wait);
@@ -247,8 +266,43 @@ function pickTag(block, tag) {
   return m[1].replace(/^\s*<!\[CDATA\[/, '').replace(/\]\]>\s*$/, '');
 }
 
+// True when the response body is an HTML interstitial instead of RSS
+// (Anubis/Cloudflare challenge, XCancel's suspension notice, auth walls...).
+function looksLikeChallengePage(xml = '') {
+  return /making sure you.*not a bot|attention required|service is suspended|not yet whitelisted|no authentication cookie/i.test(xml);
+}
+
+// Rewrite a Nitter instance URL to the equivalent x.com URL:
+//   http://nitter.jaydenha.uk/elonmusk/status/123#m -> https://x.com/elonmusk/status/123
+function nitterLinkToX(rawLink) {
+  return rawLink
+    .trim()
+    .replace(/^https?:\/\/[^/]+\//, 'https://x.com/')
+    .replace(/#.*$/, '');
+}
+
+async function fetchNitterFeed(req, instance, username) {
+  const url = `https://${instance}/${username}/rss`;
+  try {
+    const res = await fetchRssWithRetry(req, url, { failFastOnNetworkError: true });
+    if (!res.ok()) {
+      console.warn(`  [failover] ${instance}: HTTP ${res.status()}`);
+      return null;
+    }
+    const xml = await res.text();
+    if (looksLikeChallengePage(xml) || !/<rss[\s>]/i.test(xml)) {
+      console.warn(`  [failover] ${instance}: not a valid RSS document`);
+      return null;
+    }
+    return xml;
+  } catch (e) {
+    console.warn(`  [failover] ${instance}: ${e.message}`);
+    return null;
+  }
+}
+
 async function scrapeXcancelRss(link, posts) {
-  const username = link.match(/xcancel\.com\/([A-Za-z0-9_]+)/)?.[1];
+  const username = link.match(/(?:xcancel\.com|[a-z0-9.-]+)\/([A-Za-z0-9_]+)/)?.[1];
   if (!username) {
     console.warn(`  [skip] cannot parse xcancel username from ${link}`);
     return;
@@ -257,23 +311,17 @@ async function scrapeXcancelRss(link, posts) {
     ...(PROXY ? { proxy: { server: PROXY } } : {}),
     extraHTTPHeaders: { 'User-Agent': RSS_UA }
   });
-  let xml;
+  let xml = null;
   try {
-    const res = await fetchRssWithRetry(req, `https://xcancel.com/${username}/rss`);
-    if (!res.ok()) {
-      console.error(`  [error] RSS fetch failed: HTTP ${res.status()} (after ${RSS_MAX_RETRIES} retries)`);
-      return;
+    for (const instance of NITTER_INSTANCES) {
+      xml = await fetchNitterFeed(req, instance, username);
+      if (xml) break;
     }
-    xml = await res.text();
-  } catch (e) {
-    console.error(`  [error] RSS fetch failed: ${e.message}`);
-    return;
   } finally {
     await req.dispose();
   }
-
-  if (/not yet whitelisted/i.test(xml)) {
-    console.error('  [error] RSS reader UA rejected by rss.xcancel.com');
+  if (!xml) {
+    console.error(`  [error] all ${NITTER_INSTANCES.length} nitter instance(s) failed for @${username}`);
     return;
   }
 
@@ -286,10 +334,7 @@ async function scrapeXcancelRss(link, posts) {
     const block = m[1];
     const ts = Date.parse(pickTag(block, 'pubDate'));
     if (Number.isNaN(ts)) continue;
-    const rawLink = pickTag(block, 'link').trim();
-    const url = rawLink
-      .replace(/^https?:\/\/rss\.xcancel\.com/, 'https://xcancel.com')
-      .replace(/#.*$/, '');
+    const url = nitterLinkToX(pickTag(block, 'link'));
     if (!url || posts.has(url)) continue;
     const titleText = decodeEntities(pickTag(block, 'title'));
     const isRetweet = titleText.startsWith('RT by @');
@@ -357,8 +402,9 @@ async function scrapeLink(context, link) {
     // Check for login wall
     const bodyText = await page.evaluate(() => document.body?.innerText?.slice(0, 2000) || '');
     if (looksLikeLoginWall(bodyText)) {
-      console.warn('  [warn] page requires login — log in via the chrome_user_data profile,');
-      console.warn('         or add a "cookies" entry for this site in conf.json (see README note).');
+      console.warn('  [warn] page requires login — re-login via:');
+      console.warn(`         xvfb-run -a node invest_info_scrape/${site}-login.mjs`);
+      console.warn('         (or refresh the "cookies" entry for this site in conf.json)');
     }
 
     // Scroll to trigger loading of older posts
@@ -438,7 +484,11 @@ function writeMarkdown(result) {
 async function main() {
   const launchOptions = {
     headless: HEADLESS,
-    channel: 'chrome',
+    // NOTE: use Playwright's bundled Chromium, not the system Chrome
+    // (conf.browserChannel). The system "Chrome for Testing" build is older
+    // than playwright's and SIGTRAP-crashes headful against this profile
+    // after newer Chromium builds have written to it.
+    ...(conf.browserChannel ? { channel: conf.browserChannel } : {}),
     viewport: { width: 1920, height: 1080 },
     locale: 'zh-CN',
     ...(BROWSER_PROXY ? { proxy: { server: BROWSER_PROXY } } : {}),
@@ -465,8 +515,14 @@ async function main() {
   // Optional: inject raw cookie strings from conf.json, e.g.
   //   "cookies": { "weibo.com": "SUB=xxx; SUBP=yyy", "xueqiu.com": "xq_a_token=zzz" }
   // Useful when the chrome_user_data profile is not logged in.
+  // Cookies already present in the profile are KEPT (the profile's cookies are
+  // refreshed by the browser on every run, while conf.json strings go stale —
+  // a stale conf.json SUB must not clobber a fresh profile login).
   for (const [domain, cookieStr] of Object.entries(conf.cookies || {})) {
     if (!context) break;
+    const existing = new Set(
+      (await context.cookies(`https://${domain.replace(/^\./, '')}`)).map((c) => c.name)
+    );
     const cookies = String(cookieStr)
       .split(';')
       .map((kv) => kv.trim())
@@ -481,10 +537,11 @@ async function main() {
         };
       })
       .filter((c) => c.name && c.value);
-    if (cookies.length) {
-      await context.addCookies(cookies);
-      console.log(`Injected ${cookies.length} cookie(s) for ${domain}`);
+    const fresh = cookies.filter((c) => !existing.has(c.name));
+    if (fresh.length) {
+      await context.addCookies(fresh);
     }
+    console.log(`Cookies for ${domain}: injected ${fresh.length}, kept ${cookies.length - fresh.length} existing profile cookie(s)`);
   }
 
   const written = [];

@@ -82,7 +82,6 @@ async function isLoggedIn(context) {
 async function main() {
   const context = await chromium.launchPersistentContext(PROFILE, {
     headless: false,
-    channel: 'chrome',
     viewport: { width: 1280, height: 900 },
     locale: 'zh-CN',
     args: ['--disable-blink-features=AutomationControlled', '--no-sandbox']

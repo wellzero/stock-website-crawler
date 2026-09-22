@@ -1,0 +1,51 @@
+{
+  "outputDir": "/home/data/quant_free_data/html/invest_info/",
+  "userDataDir": "../chrome_user_data",
+  "hours": 48,
+  "headless": false,
+  "scrollTimes": 6,
+  "scrollDelayMs": 2500,
+  "proxy": "http://127.0.0.1:4080",
+  "nitterInstances": [
+    "nitter.jaydenha.uk"
+  ],
+  "cookies": {
+    "weibo.com": "SUB=_2A25HmIP6DeThGeBN7FcY9yfPyjmIHXVk15kyrDV8PUNbmtAYLUPlkW9NR_WH1W0Bwh2n_IZZhyocSVvRfv7twPtm; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5a6SK56PDmJFYoPY2v_Ayi5JpX5KzhUgL.Foq0S0-4S0.0eK-2dJLoIp7LxKML1KBLBKnLxKqL1hnLBoMce0Mf1KM4e02f; ALF=02_1791262890; WBPSESS=qIzdRDHnLGKpUkckpe1NI5Cf1l2xn7gzPzyR8WRSKtngGx0RbKkZf9i5_zj0pvyjHjp7Thu56QoYNcmAQWNccPlG1nPadGODkmR4TvIixO8vYQ_8pzP2GYqyuDWEPlZeGGXUYvpTx2YbfEPH98Gw7Q=="
+  },
+  "links": [
+    "https://www.xueqiu.com/u/5124430882",
+    "https://www.xueqiu.com/u/1102105103",
+    "https://www.xueqiu.com/u/1247347556",
+    "https://www.xueqiu.com/u/1760673340",
+    "https://www.xueqiu.com/u/8632046745",
+    "https://www.xueqiu.com/u/5819606767",
+    "https://www.xueqiu.com/u/9220236682",
+    "https://www.xueqiu.com/u/4857977486",
+    "https://www.xueqiu.com/u/1643044849",
+    "https://www.xueqiu.com/u/1652803556",
+    "https://www.xueqiu.com/u/9518372158",
+    "https://www.xueqiu.com/u/8790885129",
+    "https://www.xueqiu.com/u/8586152406",
+    "https://www.xueqiu.com/u/1955602780",
+    "https://www.xueqiu.com/u/1438190065",
+    "https://www.xueqiu.com/u/4694591834",
+    "https://www.xueqiu.com/u/9887656769",
+    "https://www.xueqiu.com/u/2524803655",
+    "https://www.xueqiu.com/u/3707869911",
+    "https://www.xueqiu.com/u/1333325987",
+    "https://www.xueqiu.com/u/8152922548",
+    "https://www.xueqiu.com/u/9598793634",
+    "https://www.xueqiu.com/u/3748823499",
+    "https://www.xueqiu.com/u/1102881152",
+    "https://www.xueqiu.com/u/6344107619",
+    "https://www.xueqiu.com/u/1686401828",
+    "https://www.xueqiu.com/u/3216879181",
+    "https://www.xueqiu.com/u/1039527614",
+    "https://www.xueqiu.com/u/4743057813",
+    "https://www.xueqiu.com/u/1565084460",
+    "https://www.xueqiu.com/u/2114002803",
+    "https://www.xueqiu.com/u/8186325164",
+    "https://www.xueqiu.com/u/5251837622",
+    "https://www.xueqiu.com/u/1281037846"
+  ]
+}
