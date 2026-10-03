@@ -267,9 +267,10 @@ function pickTag(block, tag) {
 }
 
 // True when the response body is an HTML interstitial instead of RSS
-// (Anubis/Cloudflare challenge, XCancel's suspension notice, auth walls...).
+// (Anubis/Cloudflare challenge, XCancel's suspension notice, waiting-room
+// queues, auth walls...).
 function looksLikeChallengePage(xml = '') {
-  return /making sure you.*not a bot|attention required|service is suspended|not yet whitelisted|no authentication cookie/i.test(xml);
+  return /making sure you.*not a bot|attention required|service is suspended|not yet whitelisted|no authentication cookie|placed in a queue|access queue/i.test(xml);
 }
 
 // Rewrite a Nitter instance URL to the equivalent x.com URL:
@@ -290,8 +291,9 @@ async function fetchNitterFeed(req, instance, username) {
       return null;
     }
     const xml = await res.text();
-    if (looksLikeChallengePage(xml) || !/<rss[\s>]/i.test(xml)) {
-      console.warn(`  [failover] ${instance}: not a valid RSS document`);
+    if (!/<rss[\s>]/i.test(xml)) {
+      const why = looksLikeChallengePage(xml) ? 'challenge/queue interstitial instead of RSS' : 'not a valid RSS document';
+      console.warn(`  [failover] ${instance}: ${why}`);
       return null;
     }
     return xml;

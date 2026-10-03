@@ -7,6 +7,7 @@
   "scrollDelayMs": 2500,
   "proxy": "http://127.0.0.1:4080",
   "nitterInstances": [
+    "nitter.kareem.one",
     "nitter.jaydenha.uk"
   ],
   "cookies": {
